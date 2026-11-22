@@ -1,0 +1,2311 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LoveMelt — Engineered For Altitude</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            display: ['Anton', 'sans-serif'],
+            sans: ['Inter', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace'],
+          },
+          colors: {
+            alpine: {
+              light: '#7492ad',
+              slate: '#5d7a94',
+              mid: '#4a647c',
+              deep: '#2b4156',
+              charcoal: '#121b24',
+              night: '#0d131a',
+              frost: '#eef2f6',
+              stealth: '#181b20',
+            }
+          }
+        }
+      }
+    };
+  </script>
+
+  <style>
+    :root {
+      --hero-bg-from: #6887a3;
+      --hero-bg-via: #4e6b85;
+      --hero-bg-to: #31495f;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: #eef2f6;
+      color: #121b24;
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .font-display-tight {
+      font-family: 'Anton', sans-serif;
+      letter-spacing: 0.015em;
+      line-height: 0.94;
+      text-transform: uppercase;
+    }
+
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: #121b24; }
+    ::-webkit-scrollbar-thumb { background: #4a647c; border-radius: 999px; }
+
+    /* Hero dynamic background transition */
+    .hero-stage {
+      transition: background 0.75s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    /* --- Reel-match motion pack (2026-11-22) --- */
+    /* Hero centre model entrance (plays as the preloader wipe lifts) */
+    @keyframes heroModelIn {
+      0% { opacity: 0; transform: translateY(38px) scale(1.045); }
+      100% { opacity: 1; transform: translateY(0) scale(1); }
+    }
+    #hero-model-img {
+      animation: heroModelIn 1.15s cubic-bezier(0.22, 1, 0.36, 1) 1.72s both;
+    }
+    @keyframes heroRise {
+      0% { opacity: 0; transform: translateY(20px); }
+      100% { opacity: 1; transform: translateY(0); }
+    }
+    .hero-rise { animation: heroRise 0.95s cubic-bezier(0.22, 1, 0.36, 1) both; }
+
+    /* Colourway snow-burst: white squall that masks the swap */
+    #hero-burst {
+      position: absolute; inset: 0; z-index: 30; pointer-events: none; opacity: 0;
+      background:
+        radial-gradient(ellipse 55% 42% at 30% 58%, rgba(255,255,255,0.98) 0%, rgba(255,255,255,0) 70%),
+        radial-gradient(ellipse 60% 48% at 58% 44%, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0) 70%),
+        radial-gradient(ellipse 48% 40% at 78% 62%, rgba(244,249,252,0.92) 0%, rgba(244,249,252,0) 70%),
+        radial-gradient(ellipse 120% 90% at 50% 50%, rgba(238,245,250,0.55) 0%, rgba(238,245,250,0) 75%);
+      filter: blur(6px);
+    }
+    #hero.bursting #hero-burst { animation: burstAnim 0.58s cubic-bezier(0.22, 1, 0.36, 1) both; }
+    @keyframes burstAnim {
+      0% { opacity: 0; transform: scale(0.82) translateX(-3%); }
+      32% { opacity: 1; transform: scale(1.04) translateX(0.5%); }
+      62% { opacity: 0.96; }
+      100% { opacity: 0; transform: scale(1.14) translateX(3.5%); }
+    }
+    #hero.bursting #hero-model-img { animation: modelSettle 0.58s cubic-bezier(0.22, 1, 0.36, 1) both; }
+    @keyframes modelSettle {
+      0% { transform: scale(1.012); } 100% { transform: scale(1); }
+    }
+
+    /* Floating-specs entrance: jacket flies in, spec pins pop staggered */
+    #float-wrap { transition: opacity 0.9s cubic-bezier(0.22, 1, 0.36, 1), transform 0.9s cubic-bezier(0.22, 1, 0.36, 1); }
+    .specs-armed #float-wrap { opacity: 0; transform: translateY(48px) scale(0.94); }
+    .specs-in #float-wrap { opacity: 1; transform: translateY(0) scale(1); }
+    .spec-pin { transition: opacity 0.4s ease, transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1); }
+    .specs-armed .spec-pin { opacity: 0; transform: scale(0.3); }
+    .specs-armed .spec-pin.pin-in { opacity: 1; transform: scale(1); }
+
+    /* Preloader diagonal wipe exit */
+    #preloader { clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%); transition: opacity 0.7s ease, clip-path 0.8s cubic-bezier(0.22, 1, 0.36, 1); }
+    #preloader.preloader-done { clip-path: polygon(0 0, 100% 0, 100% 0%, 0 16%); opacity: 0; }
+
+
+    /* --- Reel-match v2: title reveal, squall sweep, scroll reveals, footer climb --- */
+    #hero-title { animation: titleIn 0.9s cubic-bezier(0.22, 1, 0.36, 1) 1.78s both; }
+    @keyframes titleIn {
+      0% { opacity: 0; transform: translateX(-48px); clip-path: inset(0 100% 0 0); }
+      100% { opacity: 1; transform: translateX(0); clip-path: inset(0 0% 0 0); }
+    }
+    #hero-burst {
+      background: linear-gradient(100deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.55) 22%, rgba(255,255,255,0.97) 42%, rgba(244,249,252,0.97) 58%, rgba(255,255,255,0.5) 78%, rgba(255,255,255,0) 100%);
+      filter: blur(10px);
+      transform: translateX(-65%) skewX(-6deg) scale(1.15);
+    }
+    #hero.bursting #hero-burst { animation: burstSweep 0.62s cubic-bezier(0.22, 1, 0.36, 1) both; }
+    @keyframes burstSweep {
+      0% { opacity: 0; transform: translateX(-65%) skewX(-6deg) scale(1.15); }
+      25% { opacity: 1; }
+      70% { opacity: 1; }
+      100% { opacity: 0; transform: translateX(65%) skewX(-6deg) scale(1.15); }
+    }
+    .rv { opacity: 0; transform: translateY(34px); }
+    .rv.in { opacity: 1; transform: translateY(0); transition: opacity 0.85s cubic-bezier(0.22, 1, 0.36, 1), transform 0.85s cubic-bezier(0.22, 1, 0.36, 1); }
+    .rv-group > * { opacity: 0; transform: translateY(30px) scale(0.965); }
+    .rv-group.in > * { opacity: 1; transform: translateY(0) scale(1); transition: opacity 0.8s cubic-bezier(0.22, 1, 0.36, 1), transform 0.8s cubic-bezier(0.22, 1, 0.36, 1); }
+    .specs-armed #float-wrap { transform: translateY(130px) scale(0.32); }
+    #float-wrap { transition: opacity 1s cubic-bezier(0.22, 1, 0.36, 1), transform 1s cubic-bezier(0.22, 1, 0.36, 1); }
+    .spec-side { opacity: 0; transform: translateY(26px); }
+    .specs-in .spec-side { opacity: 1; transform: translateY(0); transition: opacity 0.9s cubic-bezier(0.22, 1, 0.36, 1) 0.95s, transform 0.9s cubic-bezier(0.22, 1, 0.36, 1) 0.95s; }
+    #drop05-bg-img { animation: kenburns 14s ease-in-out infinite alternate; }
+    @keyframes kenburns { from { transform: scale(1) translateX(0); } to { transform: scale(1.09) translateX(-1.5%); } }
+    .footer-word { transform: translateY(42%); }
+    .footer-word.in { transform: translateY(0); transition: transform 1.1s cubic-bezier(0.22, 1, 0.36, 1); }
+    @keyframes climberBob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-4px); } }
+
+    /* Floating jacket bobbing */
+    @keyframes floatJacket {
+      0%, 100% { transform: translateY(0px) rotate(-2deg); }
+      50% { transform: translateY(-16px) rotate(1.5deg); }
+    }
+    .animate-float-jacket {
+      animation: floatJacket 5.5s ease-in-out infinite;
+    }
+
+    /* Spec pin pulse */
+    @keyframes pinPulse {
+      0% { box-shadow: 0 0 0 0 rgba(255,255,255,0.75); }
+      70% { box-shadow: 0 0 0 14px rgba(255,255,255,0); }
+      100% { box-shadow: 0 0 0 0 rgba(255,255,255,0); }
+    }
+    .pin-pulse {
+      animation: pinPulse 2.2s infinite;
+    }
+
+    /* Wind streak animation */
+    @keyframes windSweep {
+      0% { transform: translateX(-30%) skewX(-24deg); opacity: 0; }
+      35% { opacity: 0.45; }
+      100% { transform: translateX(130%) skewX(-24deg); opacity: 0; }
+    }
+    .wind-streak {
+      animation: windSweep 6s linear infinite;
+    }
+
+    /* Hide scrollbar for drag carousel */
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+    /* Glass utilities */
+    .glass-nav {
+      background: rgba(18, 27, 36, 0.72);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+    }
+
+    .glass-pill {
+      background: rgba(255, 255, 255, 0.14);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.22);
+    }
+
+    .glass-dark {
+      background: rgba(13, 19, 26, 0.72);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+    }
+
+    /* Product card hover reveal */
+    .product-card .hover-panel {
+      transform: translateY(105%);
+      transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.25s ease;
+      opacity: 0;
+    }
+    .product-card:hover .hover-panel,
+    .product-card:focus-within .hover-panel {
+      transform: translateY(0%);
+      opacity: 1;
+    }
+    .product-card .card-img-wrap {
+      transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    .product-card:hover .card-img-wrap {
+      transform: scale(1.07);
+    }
+
+    /* Cold Ops card size reveal */
+    .gear-card .gear-overlay {
+      opacity: 0;
+      transform: translateY(12px);
+      transition: all 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    .gear-card:hover .gear-overlay,
+    .gear-card.active .gear-overlay {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* Shimmer for generating images */
+    @keyframes nbShimmer {
+      0% { background-position: -200% 0; }
+      100% { background-position: 200% 0; }
+    }
+    .nb-loading-ring {
+      background: linear-gradient(90deg, rgba(255,255,255,0.06) 25%, rgba(165,216,255,0.22) 50%, rgba(255,255,255,0.06) 75%);
+      background-size: 200% 100%;
+      animation: nbShimmer 1.8s infinite linear;
+    }
+  </style>
+</head>
+<body class="selection:bg-alpine-deep selection:text-white">
+
+  <!-- =========================================================
+       1. FULLSCREEN PRELOADER (00:00)
+  ========================================================== -->
+  <div id="preloader" class="fixed inset-0 z-[100] bg-[#2b4156] text-white flex flex-col justify-between p-6 sm:p-10 transition-all duration-700">
+    <div class="flex items-center justify-between font-mono text-[11px] sm:text-xs tracking-widest uppercase text-white/70">
+      <span>DROP 01 · FW25</span>
+      <span>Summit</span>
+    </div>
+
+    <div class="flex flex-col items-center justify-center">
+      <!-- LoveMelt Hand-Brushed Graffiti SVG Logo -->
+      <div class="font-display text-6xl sm:text-7xl md:text-8xl tracking-wide text-white">LoveMelt</div>
+      <div class="mt-6 w-44 h-1 bg-white/15 rounded-full overflow-hidden">
+        <div id="preloader-bar" class="h-full bg-white rounded-full transition-all duration-100" style="width: 0%;"></div>
+      </div>
+    </div>
+
+    <div class="flex items-end justify-between">
+      <div class="font-display text-5xl sm:text-7xl tracking-tight leading-none">
+        <span id="preloader-alt">0000</span><span class="text-xl sm:text-2xl ml-1 text-white/75 font-mono">M</span>
+      </div>
+      <div class="text-right font-mono text-[10px] sm:text-xs text-white/70 leading-relaxed">
+        <div>Temp: -19°C</div>
+        <div>45.8326° N, 6.8652° E</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- =========================================================
+       PERSISTENT TOP NAVIGATION BAR
+  ========================================================== -->
+  <header id="main-nav" class="fixed top-0 left-0 right-0 z-50 transition-all duration-300 px-4 sm:px-8 py-4">
+    <div class="max-w-[1440px] mx-auto flex items-center justify-between">
+      <!-- Left Links -->
+      <nav class="hidden md:flex items-center gap-7 text-xs font-medium tracking-wide text-white/90">
+        <a href="#collection" class="hover:text-white transition">Shop</a>
+        <a href="#hero" class="hover:text-white transition">Puffers</a>
+        <a href="#lookbook" class="hover:text-white transition">Lookbook</a>
+        <a href="#story" class="hover:text-white transition">Story</a>
+      </nav>
+
+      <!-- Mobile Menu Button -->
+      <button id="mobile-menu-btn" class="md:hidden w-9 h-9 rounded-full glass-pill text-white flex items-center justify-center" aria-label="Menu">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+      </button>
+
+      <!-- Center LoveMelt Logo -->
+      <a href="#hero" class="flex items-center justify-center group" aria-label="LoveMelt Home">
+        <span class="font-display text-[22px] sm:text-2xl tracking-wide text-white leading-none">LoveMelt</span>
+      </a>
+
+      <!-- Right Controls -->
+      <div class="flex items-center gap-2 sm:gap-2.5">
+        <a href="#footer" class="hidden sm:inline-block text-xs font-medium text-white/85 hover:text-white mr-2 transition">Help</a>
+        <button onclick="openSearchModal()" class="w-9 h-9 rounded-full glass-pill text-white flex items-center justify-center hover:bg-white/25 transition" aria-label="Search">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+        </button>
+        <button onclick="showToast('Saved items are highlighted across the store.')" class="relative w-9 h-9 rounded-full glass-pill text-white flex items-center justify-center hover:bg-white/25 transition" aria-label="Wishlist">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>
+          <span id="wishlist-badge" class="hidden absolute -top-1 -right-1 w-4 h-4 rounded-full bg-white text-alpine-charcoal text-[9px] font-bold flex items-center justify-center">0</span>
+        </button>
+        <button onclick="showToast('Expedition Flagship: Chamonix-Mont-Blanc · 45.83°N')" class="hidden sm:flex w-9 h-9 rounded-full glass-pill text-white items-center justify-center hover:bg-white/25 transition" aria-label="Location">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
+        </button>
+        <button id="nav-bag-btn" onclick="openCartDrawer()" class="relative w-9 h-9 rounded-full glass-pill text-white flex items-center justify-center hover:bg-white/25 transition" aria-label="Shopping Bag">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+          <span id="cart-badge" class="absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 rounded-full bg-white text-alpine-charcoal text-[10px] font-bold flex items-center justify-center transition-transform">0</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Mobile Dropdown -->
+    <div id="mobile-menu" class="hidden md:hidden mt-3 p-4 rounded-2xl glass-dark text-white flex flex-col gap-3 text-sm font-medium">
+      <a href="#collection" onclick="toggleMobileMenu()" class="py-1.5 border-b border-white/10">Shop Collection</a>
+      <a href="#hero" onclick="toggleMobileMenu()" class="py-1.5 border-b border-white/10">Puffers</a>
+      <a href="#cold-ops" onclick="toggleMobileMenu()" class="py-1.5 border-b border-white/10">Cold Ops Gear</a>
+      <a href="#lookbook" onclick="toggleMobileMenu()" class="py-1.5 border-b border-white/10">FW25 Lookbook</a>
+      <a href="#story" onclick="toggleMobileMenu()" class="py-1.5">Alpine Story</a>
+    </div>
+  </header>
+
+  <!-- =========================================================
+       PERSISTENT BOTTOM-LEFT ALTITUDE HUD PILL
+  ========================================================== -->
+  <div id="altitude-hud" class="fixed bottom-4 left-4 z-40 glass-dark text-white rounded-full px-3.5 py-2 flex items-center gap-3 shadow-xl border border-white/15 select-none pointer-events-none">
+    <span class="w-2 h-2 rounded-full bg-sky-300 animate-pulse"></span>
+    <span id="hud-camp" class="font-mono text-[10px] sm:text-[11px] uppercase tracking-wider text-white/85 font-medium">Base Camp</span>
+    <div class="w-12 sm:w-16 h-1.5 bg-white/15 rounded-full overflow-hidden">
+      <div id="hud-bar" class="h-full bg-white rounded-full transition-all duration-150" style="width: 8%;"></div>
+    </div>
+    <span id="hud-alt" class="font-mono text-[10px] sm:text-[11px] font-semibold">2,400M</span>
+    <span id="hud-temp" class="hidden sm:inline font-mono text-[10px] text-sky-200/80">-12°C</span>
+  </div>
+
+  <!-- =========================================================
+       FLOATING NANO BANANA STUDIO CONTROL PILL (BOTTOM-RIGHT)
+  ========================================================== -->
+  <div class="fixed bottom-4 right-4 z-40 flex flex-col items-end gap-2" style="display:none">
+    <div id="nb-studio-drawer" class="hidden w-72 sm:w-80 rounded-2xl glass-dark text-white p-4 shadow-2xl border border-white/15">
+      <div class="flex items-center justify-between mb-2">
+        <div class="flex items-center gap-2">
+          <span class="text-sm">🍌</span>
+          <span class="font-mono text-xs font-semibold uppercase tracking-wider">Nano Banana Studio</span>
+        </div>
+        <button onclick="toggleNBDrawer()" class="text-white/60 hover:text-white text-xs">✕</button>
+      </div>
+      <p class="text-[11px] text-white/70 mb-3 leading-relaxed">
+        Photorealistic product & alpine imagery powered by <span class="font-mono text-sky-200">gemini-3.1-flash-image</span>.
+      </p>
+      <div id="nb-asset-list" class="max-h-48 overflow-y-auto space-y-1.5 pr-1 mb-3 text-xs"></div>
+      <div class="flex gap-2">
+        <button onclick="generateAllNanoBanana(true)" class="flex-1 py-2 px-3 rounded-xl bg-white text-alpine-charcoal font-semibold text-xs hover:bg-sky-100 transition">
+          Generate All Photos
+        </button>
+        <button onclick="clearNBCache()" class="py-2 px-3 rounded-xl bg-white/10 text-white/80 hover:bg-white/20 text-xs transition" title="Clear cached images">
+          Reset
+        </button>
+      </div>
+    </div>
+
+    <button onclick="toggleNBDrawer()" class="glass-dark text-white rounded-full px-3.5 py-2 flex items-center gap-2 shadow-xl border border-white/15 hover:bg-alpine-charcoal transition text-xs font-mono">
+      <span id="nb-status-dot" class="w-2 h-2 rounded-full bg-amber-300 animate-pulse"></span>
+      <span id="nb-status-text">Nano Banana Studio</span>
+    </button>
+  </div>
+
+  <!-- =========================================================
+       MAIN STOREFRONT CONTAINER (HIDDEN DURING CHECKOUT)
+  ========================================================== -->
+  <main id="storefront-view">
+
+    <!-- =======================================================
+         2. HERO & 4-COLOURWAY SWITCHER (00:01 - 00:05)
+    ======================================================== -->
+    <section id="hero" class="hero-stage relative min-h-screen w-full overflow-hidden flex flex-col justify-between pt-24 pb-16 px-4 sm:px-8 lg:px-12"
+      style="background: radial-gradient(circle at 52% 45%, #7697b5 0%, #52708b 48%, #344d64 100%);">
+
+      <!-- Snow Canvas Layer -->
+      <canvas id="snow-canvas-hero" class="snow-canvas absolute inset-0 w-full h-full pointer-events-none z-20"></canvas>
+      <div id="hero-burst"></div>
+
+      <!-- Giant Translucent Background LoveMelt Watermark -->
+      <div class="absolute inset-0 flex items-center justify-center pointer-events-none select-none overflow-hidden z-0">
+        <div class="font-display w-full text-center text-[15vw] leading-none tracking-wide text-white/[0.16] select-none">LoveMelt</div>
+      </div>
+
+      <!-- Main Hero Open-Center Layout (No Center Model Photo) -->
+      <div class="relative z-10 max-w-[1400px] w-full mx-auto my-auto grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
+
+        <!-- Left Product Panel -->
+        <div class="lg:col-span-5 text-white hero-rise" style="animation-delay:1.88s">
+          <div class="flex items-center gap-3 font-mono text-[11px] uppercase tracking-widest text-white/75 mb-2">
+            <span id="hero-drop-label">Drop 01 · Arctic</span>
+            <span>·</span>
+            <span>FW25 · 4 colourways</span>
+          </div>
+          <h1 id="hero-title" class="font-display-tight text-6xl sm:text-7xl xl:text-[84px] text-white drop-shadow-sm mb-5">
+            ARCTIC 01
+          </h1>
+
+          <!-- Size Selector -->
+          <div class="flex items-center gap-2 mb-5">
+            <span class="text-xs text-white/70 mr-2">Size</span>
+            <div id="hero-size-pills" class="flex items-center gap-1.5">
+              <button data-size="S" class="hero-size-btn w-9 h-9 rounded-full text-xs font-semibold transition border border-white/25 bg-white/10 text-white hover:bg-white/25">S</button>
+              <button data-size="M" class="hero-size-btn w-9 h-9 rounded-full text-xs font-semibold transition border border-white bg-white text-alpine-charcoal shadow">M</button>
+              <button data-size="L" class="hero-size-btn w-9 h-9 rounded-full text-xs font-semibold transition border border-white/25 bg-white/10 text-white hover:bg-white/25">L</button>
+              <button data-size="XL" class="hero-size-btn w-9 h-9 rounded-full text-xs font-semibold transition border border-white/25 bg-white/10 text-white hover:bg-white/25">XL</button>
+            </div>
+          </div>
+
+          <!-- Primary Pill CTA -->
+          <button id="hero-add-btn" onclick="addHeroToCart(this)" class="group inline-flex items-center gap-4 bg-white text-alpine-charcoal pl-6 pr-2 py-2 rounded-full font-semibold text-sm shadow-2xl hover:scale-[1.02] active:scale-[0.98] transition-all">
+            <span>Add to cart</span>
+            <span id="hero-price" class="font-mono font-bold">$899</span>
+            <span class="w-9 h-9 rounded-full bg-alpine-charcoal text-white flex items-center justify-center group-hover:translate-x-0.5 transition">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M5 12h14m-6-6 6 6-6 6"/></svg>
+            </span>
+          </button>
+
+          <!-- Rating Row -->
+          <div class="mt-5 flex items-center gap-3 text-xs text-white/85">
+            <div class="flex -space-x-1.5">
+              <span class="w-6 h-6 rounded-full bg-sky-200 border-2 border-alpine-mid flex items-center justify-center text-[9px] text-alpine-charcoal font-bold">AK</span>
+              <span class="w-6 h-6 rounded-full bg-slate-200 border-2 border-alpine-mid flex items-center justify-center text-[9px] text-alpine-charcoal font-bold">ML</span>
+              <span class="w-6 h-6 rounded-full bg-white border-2 border-alpine-mid flex items-center justify-center text-[9px] text-alpine-charcoal font-bold">JR</span>
+            </div>
+            <span class="font-mono font-semibold">4.9</span>
+            <span class="text-amber-300 tracking-tighter">★★★★★</span>
+            <span class="text-white/65">1,240 field reports</span>
+          </div>
+
+          <!-- Technical Specs Bottom Left -->
+          <div class="mt-8 pt-4 border-t border-white/15 font-mono text-[11px] text-white/75 space-y-1">
+            <div id="hero-spec-1">Rated -40°C · 800FP goose down</div>
+            <div>2-year alpine expedition warranty</div>
+          </div>
+        </div>
+
+        <!-- Center Hero Model (reel version: model stands over the watermark) -->
+        <div class="relative flex lg:col-span-4 items-start justify-center pointer-events-none w-full">
+          <img id="hero-model-img" alt="LoveMelt hero colourway" class="w-full max-w-[410px] h-[54vh] lg:h-[70vh] object-cover object-top rounded-t-[2.2rem] shadow-[0_40px_90px_rgba(8,18,30,0.45)] [mask-image:linear-gradient(to_bottom,black_82%,transparent_99%)]" />
+        </div>
+
+        <!-- Right 4-Colourway Selector Stack -->
+        <div class="lg:col-span-3 flex flex-col gap-2.5 hero-rise" style="animation-delay:2.02s">
+          <div id="colourway-stack" class="grid grid-cols-2 lg:grid-cols-1 gap-2.5">
+            <!-- Populated by JS -->
+          </div>
+          <div class="hidden lg:flex items-center justify-end mt-2 font-mono text-xs text-white/75">
+            <span id="hero-counter" class="font-bold text-white">01</span>
+            <span class="mx-1 text-white/40">/</span>
+            <span>04</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- =======================================================
+         4. NEW COLLECTION GRID ("Every card sells on hover")
+    ======================================================== -->
+    <section id="collection" class="bg-[#eef2f6] py-20 sm:py-28 px-4 sm:px-8 lg:px-12">
+      <div class="max-w-[1400px] mx-auto">
+        <div class="flex flex-wrap items-end justify-between gap-4 mb-10">
+          <div>
+            <p class="font-mono text-xs uppercase tracking-widest text-alpine-mid mb-2">FW25 Expedition Line</p>
+            <h2 class="font-display-tight text-5xl sm:text-6xl lg:text-7xl text-alpine-charcoal">NEW COLLECTION</h2>
+          </div>
+          <button onclick="showToast('Showing all 9 FW25 silhouettes')" class="px-5 py-2.5 rounded-full bg-alpine-charcoal text-white text-xs font-semibold hover:bg-alpine-deep transition">
+            View all (9)
+          </button>
+        </div>
+
+        <!-- Editorial Feature + Product Grid -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-5">
+          <!-- Large Left Editorial Card (AURORA) -->
+          <div class="lg:col-span-4 relative rounded-[1.75rem] overflow-hidden bg-gradient-to-b from-[#728fa8] to-[#3f5970] text-white min-h-[480px] flex flex-col justify-between p-6 shadow-lg group">
+            <img id="editorial-aurora-img" alt="AURORA Editorial" class="absolute inset-0 w-full h-full object-cover opacity-90 group-hover:scale-105 transition-transform duration-700" />
+            <div class="absolute inset-0 bg-gradient-to-t from-[#121b24]/85 via-transparent to-[#121b24]/30"></div>
+
+            <div class="relative z-10 flex items-start justify-between">
+              <div>
+                <span class="font-mono text-[10px] uppercase tracking-widest bg-white/20 backdrop-blur-md px-2.5 py-1 rounded-full">Editorial Drop</span>
+                <h3 class="font-display-tight text-5xl mt-3">AURORA</h3>
+                <p class="text-xs text-white/80 mt-1">Pearl frost · 800FP Expedition Down</p>
+              </div>
+              <span class="font-mono text-sm font-bold">$1,099</span>
+            </div>
+
+            <div class="relative z-10 flex items-center justify-between">
+              <button onclick="addProductById('aurora', 'M', this)" class="inline-flex items-center gap-3 bg-white text-alpine-charcoal pl-5 pr-2 py-2 rounded-full text-xs font-semibold hover:bg-sky-50 transition shadow-lg">
+                <span>Shop Aurora</span>
+                <span class="w-7 h-7 rounded-full bg-alpine-charcoal text-white flex items-center justify-center">→</span>
+              </button>
+              <span class="font-mono text-[11px] text-white/70">LoveMelt FW25</span>
+            </div>
+          </div>
+
+          <!-- Right 8-Card Product Grid -->
+          <div id="collection-grid" class="rv-group lg:col-span-8 grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
+            <!-- Populated by JS -->
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- =======================================================
+         5. ENGINEERED, NOT STYLED (Animated Proof Cards)
+    ======================================================== -->
+    <section id="story" class="bg-[#eef2f6] pb-24 pt-6 px-4 sm:px-8 lg:px-12">
+      <div class="max-w-[1400px] mx-auto">
+        <div class="mb-10">
+          <p class="font-mono text-xs uppercase tracking-widest text-alpine-mid mb-2">Sub-Zero Proof</p>
+          <h2 class="font-display-tight text-5xl sm:text-6xl text-alpine-charcoal">ENGINEERED, NOT STYLED</h2>
+        </div>
+
+        <div id="proof-grid" class="rv-group grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+          <!-- Card 1 -->
+          <div class="relative h-[380px] sm:h-[420px] rounded-[1.75rem] overflow-hidden shadow-lg group">
+            <img id="proof-img-0" alt="Extreme cold rating" class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
+            <div class="absolute inset-0 bg-gradient-to-t from-[#0d131a]/90 via-[#121b24]/30 to-transparent"></div>
+            <div class="relative z-10 h-full flex flex-col justify-end p-6 text-white">
+              <div class="font-display text-6xl sm:text-7xl tracking-tight leading-none mb-2">
+                <span class="proof-counter" data-target="-44" data-prefix="" data-suffix="°C">0°C</span>
+              </div>
+              <p class="text-xs text-white/80 leading-relaxed">Extreme cold rating tested in Arctic blasts & high-altitude ridgelines.</p>
+            </div>
+          </div>
+
+          <!-- Card 2 -->
+          <div class="relative h-[380px] sm:h-[420px] rounded-[1.75rem] overflow-hidden shadow-lg group">
+            <img id="proof-img-1" alt="Goose down fill power" class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
+            <div class="absolute inset-0 bg-gradient-to-t from-[#0d131a]/90 via-[#121b24]/30 to-transparent"></div>
+            <div class="relative z-10 h-full flex flex-col justify-end p-6 text-white">
+              <div class="font-display text-6xl sm:text-7xl tracking-tight leading-none mb-2">
+                <span class="proof-counter" data-target="816" data-prefix="" data-suffix="">0</span><span class="text-2xl font-mono ml-1 text-sky-200">FP</span>
+              </div>
+              <p class="text-xs text-white/80 leading-relaxed">Fill power of our ethically certified hydrophobic goose down chambers.</p>
+            </div>
+          </div>
+
+          <!-- Card 3 -->
+          <div class="relative h-[380px] sm:h-[420px] rounded-[1.75rem] overflow-hidden shadow-lg group">
+            <img id="proof-img-2" alt="Two layer storm shell" class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
+            <div class="absolute inset-0 bg-gradient-to-t from-[#0d131a]/90 via-[#121b24]/30 to-transparent"></div>
+            <div class="relative z-10 h-full flex flex-col justify-end p-6 text-white">
+              <div class="font-display text-6xl sm:text-7xl tracking-tight leading-none mb-2">
+                <span class="proof-counter" data-target="2" data-prefix="" data-suffix="">0</span><span class="text-2xl font-mono ml-1 text-sky-200">L</span>
+              </div>
+              <p class="text-xs text-white/80 leading-relaxed">Two layers of ripstop storm membrane, welded to weather the storm.</p>
+            </div>
+          </div>
+
+          <!-- Card 4 -->
+          <div class="relative h-[380px] sm:h-[420px] rounded-[1.75rem] overflow-hidden shadow-lg group">
+            <img id="proof-img-3" alt="Wind tunnel hours" class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
+            <div class="absolute inset-0 bg-gradient-to-t from-[#0d131a]/90 via-[#121b24]/30 to-transparent"></div>
+            <div class="relative z-10 h-full flex flex-col justify-end p-6 text-white">
+              <div class="font-display text-6xl sm:text-7xl tracking-tight leading-none mb-2">
+                <span class="proof-counter" data-target="42" data-prefix="" data-suffix="">0</span><span class="text-2xl font-mono ml-1 text-sky-200">H</span>
+              </div>
+              <p class="text-xs text-white/80 leading-relaxed">Hours of continuous sub-zero wind-tunnel validation, zero seam leaks.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- =======================================================
+         6. KINETIC WEATHER TYPOGRAPHY (00:14 - 00:16)
+    ======================================================== -->
+    <section id="kinetic-weather" class="relative overflow-hidden bg-[#2b4156] text-white">
+      <!-- Part A: Snow-Capped Mountain Range with Scroll-Reactive Type -->
+      <div class="relative min-h-[85vh] flex flex-col justify-between py-20 px-4 sm:px-10 overflow-hidden">
+        <img id="mountain-bg-img" alt="Alpine Peaks" class="absolute inset-0 w-full h-full object-cover opacity-80 scale-105" />
+        <div class="absolute inset-0 bg-gradient-to-b from-[#2b4156]/65 via-transparent to-[#2b4156]"></div>
+
+        <!-- Wind Streaks -->
+        <div class="absolute inset-0 pointer-events-none overflow-hidden">
+          <div class="wind-streak absolute top-[22%] left-0 w-96 h-[2px] bg-gradient-to-r from-transparent via-white/60 to-transparent"></div>
+          <div class="wind-streak absolute top-[54%] left-0 w-[520px] h-[3px] bg-gradient-to-r from-transparent via-sky-100/50 to-transparent" style="animation-delay: 2.1s;"></div>
+          <div class="wind-streak absolute top-[76%] left-0 w-80 h-[2px] bg-gradient-to-r from-transparent via-white/50 to-transparent" style="animation-delay: 4s;"></div>
+        </div>
+
+        <canvas id="snow-canvas-weather" class="snow-canvas absolute inset-0 w-full h-full pointer-events-none z-10"></canvas>
+
+        <div class="relative z-20 max-w-[1400px] w-full mx-auto flex flex-col sm:flex-row justify-between gap-4 font-mono text-[11px] text-white/75">
+          <p class="max-w-xs">LoveMelt was born at 4,200 m. Not as a trend, not as a season — as a shield.</p>
+          <p class="max-w-xs sm:text-right">Zero compromises on down density, seam sealing, or thermal retention.</p>
+        </div>
+
+        <div class="relative z-20 max-w-[1400px] w-full mx-auto mt-auto pt-24 space-y-1 select-none">
+          <div id="kinetic-line-1" class="font-display-tight text-5xl sm:text-7xl lg:text-[96px] text-white drop-shadow-md transition-transform duration-100 will-change-transform">
+            BUILT FOR COLD
+          </div>
+          <div id="kinetic-line-2" class="font-display-tight text-5xl sm:text-7xl lg:text-[96px] text-sky-100/90 drop-shadow-md transition-transform duration-100 will-change-transform">
+            MADE FOR HEIGHT
+          </div>
+          <div id="kinetic-line-3" class="font-display-tight text-5xl sm:text-7xl lg:text-[96px] text-white drop-shadow-md transition-transform duration-100 will-change-transform">
+            FORGED TO LAST
+          </div>
+        </div>
+      </div>
+
+      <!-- Part B: Dramatic Alpine Portrait ("NOT FOR MANY / FOR THE FEW") -->
+      <div class="relative min-h-[78vh] flex items-center justify-center py-20 px-4 sm:px-10 bg-gradient-to-b from-[#2b4156] via-[#4a647c] to-[#5d7a94] overflow-hidden">
+        <div class="max-w-[1400px] w-full mx-auto relative">
+          <!-- Top Split Headline -->
+          <div class="flex items-center justify-between font-display-tight text-3xl sm:text-5xl lg:text-7xl tracking-wide mb-4 relative z-20">
+            <span id="split-left" class="transition-transform duration-150">NOT FOR MANY</span>
+            <span id="split-right" class="text-sky-100/90 transition-transform duration-150">FOR THE FEW</span>
+          </div>
+
+          <!-- Wide Portrait Frame -->
+          <div class="relative w-full h-[52vh] sm:h-[62vh] rounded-[2rem] overflow-hidden shadow-2xl border border-white/20">
+            <img id="portrait-few-img" alt="Alpine Explorer Portrait" class="w-full h-full object-cover object-center" />
+            <div class="absolute inset-0 bg-gradient-to-t from-[#344d64]/70 via-transparent to-transparent"></div>
+            <div class="absolute bottom-5 right-6 font-mono text-xs text-white/80">Tested at -42°C · Mont Blanc Massif</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- =======================================================
+         7. FLOATING JACKET & PINNED SPECS (00:17 - 00:18)
+    ======================================================== -->
+    <section id="floating-specs" class="relative min-h-[95vh] bg-gradient-to-b from-[#5d7a94] via-[#4a647c] to-[#365068] text-white py-20 px-4 sm:px-8 lg:px-12 overflow-hidden flex items-center">
+      <canvas id="snow-canvas-float" class="snow-canvas absolute inset-0 w-full h-full pointer-events-none z-10"></canvas>
+
+      <div class="relative z-20 max-w-[1400px] w-full mx-auto grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+        <!-- Top-Left Giant Headline -->
+        <div class="lg:col-span-4 space-y-6">
+          <h2 class="font-display-tight text-4xl sm:text-5xl xl:text-6xl leading-[0.96]">
+            WHEN THE COLD HITS, EVERYTHING ELSE GOES <span class="text-sky-200/80">QUIET</span>
+          </h2>
+          <div class="font-mono text-xs text-white/75 space-y-1">
+            <div>Arctic 01 · Expedition Puffer</div>
+            <div>1.12 kg · 800FP Hydrophobic Down</div>
+            <div>Shell: 2L Recycled Ripstop Nylon</div>
+          </div>
+        </div>
+
+        <!-- Center Floating Jacket + Interactive Spec Pins -->
+        <div class="lg:col-span-5 relative flex items-center justify-center py-6">
+          <div id="float-wrap" class="relative w-full max-w-[430px] aspect-[4/5] flex items-center justify-center">
+            <!-- Floating Jacket Visual -->
+            <div class="animate-float-jacket relative w-full h-full rounded-[2rem] overflow-hidden shadow-[0_35px_90px_rgba(10,20,32,0.5)] border border-white/25 bg-[#45617a]/40">
+              <img id="floating-jacket-img" alt="Floating Arctic 01 Jacket" class="w-full h-full object-cover" />
+            </div>
+
+            <!-- Tucked LoveMelt Logo -->
+            <span class="absolute -bottom-3 right-3 font-display text-xl tracking-wide text-white drop-shadow-xl pointer-events-none z-30">LoveMelt</span>
+
+            <!-- 4 Interactive Spec Pins -->
+            <!-- Pin 1: Storm-Lock Hood -->
+            <div class="spec-pin group absolute top-[18%] left-[44%] z-30">
+              <button class="pin-pulse w-7 h-7 rounded-full bg-white text-alpine-charcoal font-bold text-xs flex items-center justify-center shadow-lg">+</button>
+              <div class="hidden group-hover:block group-focus-within:block absolute left-9 top-1/2 -translate-y-1/2 w-48 p-3 rounded-xl glass-dark text-white text-[11px] shadow-2xl">
+                <div class="font-mono font-semibold text-sky-200 mb-0.5">STORM-LOCK HOOD</div>
+                <div class="text-white/80">Helmet-compatible cinch hood with internal draft collar.</div>
+              </div>
+            </div>
+
+            <!-- Pin 2: 800FP Goose Down -->
+            <div class="spec-pin group absolute top-[43%] right-[16%] z-30">
+              <button class="pin-pulse w-7 h-7 rounded-full bg-white text-alpine-charcoal font-bold text-xs flex items-center justify-center shadow-lg">+</button>
+              <div class="hidden group-hover:block group-focus-within:block absolute right-9 top-1/2 -translate-y-1/2 w-48 p-3 rounded-xl glass-dark text-white text-[11px] shadow-2xl">
+                <div class="font-mono font-semibold text-sky-200 mb-0.5">800FP GOOSE DOWN</div>
+                <div class="text-white/80">Box-wall baffle chambers eliminate cold spots down to -40°C.</div>
+              </div>
+            </div>
+
+            <!-- Pin 3: 2L Ripstop Shell -->
+            <div class="spec-pin group absolute top-[54%] left-[18%] z-30">
+              <button class="pin-pulse w-7 h-7 rounded-full bg-white text-alpine-charcoal font-bold text-xs flex items-center justify-center shadow-lg">+</button>
+              <div class="hidden group-hover:block group-focus-within:block absolute left-9 top-1/2 -translate-y-1/2 w-48 p-3 rounded-xl glass-dark text-white text-[11px] shadow-2xl">
+                <div class="font-mono font-semibold text-sky-200 mb-0.5">2L RIPSTOP SHELL</div>
+                <div class="text-white/80">20,000mm waterproof membrane with DWR snow-shedding finish.</div>
+              </div>
+            </div>
+
+            <!-- Pin 4: Taped Seam Zippers -->
+            <div class="spec-pin group absolute bottom-[22%] left-[47%] z-30">
+              <button class="pin-pulse w-7 h-7 rounded-full bg-white text-alpine-charcoal font-bold text-xs flex items-center justify-center shadow-lg">+</button>
+              <div class="hidden group-hover:block group-focus-within:block absolute left-9 top-1/2 -translate-y-1/2 w-48 p-3 rounded-xl glass-dark text-white text-[11px] shadow-2xl">
+                <div class="font-mono font-semibold text-sky-200 mb-0.5">TAPED SEAM ZIPPERS</div>
+                <div class="text-white/80">YKK AquaGuard® matte zippers with glove-friendly pull tabs.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right CTA & Bottom-Right Statement -->
+        <div class="spec-side lg:col-span-3 flex flex-col lg:items-end justify-between gap-10">
+          <div class="text-left lg:text-right font-mono text-[11px] text-white/75">
+            <div>Tested at -40°C</div>
+            <div>Chamonix North Face</div>
+          </div>
+
+          <button onclick="addProductById('arctic01', 'M', this)" class="group inline-flex items-center gap-3.5 bg-white text-alpine-charcoal pl-6 pr-2 py-2.5 rounded-full font-semibold text-sm shadow-2xl hover:scale-[1.03] transition">
+            <span>Shop Arctic 01</span>
+            <span class="font-mono font-bold">$899</span>
+            <span class="w-8 h-8 rounded-full bg-alpine-charcoal text-white flex items-center justify-center">→</span>
+          </button>
+
+          <div class="lg:text-right">
+            <h3 class="font-display-tight text-3xl sm:text-4xl text-white">
+              YOU DON'T FEEL COLD.<br /><span class="text-sky-200">YOU FEEL LESS.</span>
+            </h3>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- =======================================================
+         8. COLD OPS INVENTORY (Grab-and-Throw Carousel)
+    ======================================================== -->
+    <section id="cold-ops" class="bg-[#121b24] text-white py-24 px-4 sm:px-8 lg:px-12 overflow-hidden">
+      <div class="max-w-[1400px] mx-auto">
+        <div class="flex flex-wrap items-end justify-between gap-6 mb-10">
+          <div>
+            <p class="font-mono text-xs uppercase tracking-widest text-sky-300/75 mb-2">Drag &amp; Throw · Expedition Accessories</p>
+            <h2 class="font-display-tight text-5xl sm:text-6xl lg:text-7xl">COLD OPS<br />INVENTORY</h2>
+          </div>
+          <div class="max-w-xs text-left sm:text-right">
+            <p class="text-xs text-white/65 leading-relaxed mb-4">
+              Goggles, mitts, beanies and boots. Everything that keeps the edges warm, in the same cold lab as the jackets.
+            </p>
+            <button onclick="showToast('All 6 Cold Ops essentials ready to ship')" class="px-5 py-2 rounded-full bg-white text-alpine-charcoal text-xs font-semibold hover:bg-sky-100 transition">
+              Shop all
+            </button>
+          </div>
+        </div>
+
+        <!-- Draggable Horizontal Carousel -->
+        <div id="cold-ops-track" class="rv-group flex gap-5 overflow-x-auto no-scrollbar cursor-grab active:cursor-grabbing select-none pb-4">
+          <!-- Populated by JS -->
+        </div>
+      </div>
+    </section>
+
+    <!-- =======================================================
+         9. FW25 LOOKBOOK ("SHOT ABOVE THE CLOUD LINE")
+    ======================================================== -->
+    <section id="lookbook" class="bg-[#2b4156] text-white py-24 px-4 sm:px-8 lg:px-12">
+      <div class="max-w-[1400px] mx-auto grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
+        <!-- Left 3x3 Alpine Grid -->
+        <div id="lookbook-grid" class="rv-group lg:col-span-7 grid grid-cols-3 gap-2.5 sm:gap-3.5">
+          <!-- Populated by JS -->
+        </div>
+
+        <!-- Right Copy -->
+        <div class="lg:col-span-5 space-y-5">
+          <p class="font-mono text-xs uppercase tracking-widest text-sky-200/75">FW25 Lookbook · 3,842 M</p>
+          <h2 class="font-display-tight text-5xl sm:text-6xl xl:text-7xl leading-[0.94]">
+            SHOT ABOVE<br />THE CLOUD LINE
+          </h2>
+          <p class="text-sm text-white/75 leading-relaxed max-w-md">
+            Six looks, three peaks, one week at -22°C. No studio light, no retouched snow. Click any frame to inspect in fullscreen.
+          </p>
+          <button onclick="openLightbox(0)" class="inline-flex items-center gap-3 bg-white text-alpine-charcoal px-6 py-3 rounded-full text-xs font-semibold hover:bg-sky-100 transition shadow-xl">
+            <span>Open the lookbook</span>
+            <span>↗</span>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- =======================================================
+         10. SUMMIT LOG (Interactive Mountain Review Climber)
+    ======================================================== -->
+    <section id="summit-log" class="bg-[#0d131a] text-white py-24 px-4 sm:px-8 lg:px-12 overflow-hidden">
+      <div class="max-w-[1400px] mx-auto grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
+
+        <!-- Left Rating & Revealed Reviews -->
+        <div class="lg:col-span-5 space-y-6">
+          <div>
+            <p class="font-mono text-xs uppercase tracking-widest text-sky-300/75 mb-2">Field Reports</p>
+            <h2 class="font-display-tight text-5xl sm:text-6xl lg:text-7xl">SUMMIT LOG</h2>
+          </div>
+
+          <div class="flex items-center gap-4">
+            <span id="summit-rating-num" class="font-display text-6xl text-white">3.0</span>
+            <div>
+              <div id="summit-stars" class="text-amber-300 text-lg tracking-wider">★★★☆☆</div>
+              <div id="summit-report-count" class="font-mono text-[11px] text-white/60">Click or drag CLIMB to plant flags</div>
+            </div>
+          </div>
+
+          <p class="text-xs text-white/70 leading-relaxed max-w-sm">
+            Every flag is a jacket that went somewhere cold. Advance up the ridge to plant altitude markers and read verified field reports.
+          </p>
+
+          <!-- Revealed Expedition Reviews -->
+          <div id="summit-reviews-list" class="space-y-3 min-h-[160px]">
+            <div class="p-4 rounded-2xl bg-white/5 border border-white/10 text-xs text-white/55 font-mono">
+              Base Camp ready — press <span class="text-white font-semibold">CLIMB</span> on the ridge to reveal expedition reviews.
+            </div>
+          </div>
+        </div>
+
+        <!-- Right Interactive Mountain Ridge Climber -->
+        <div class="lg:col-span-7">
+          <div id="ridge-stage" class="relative w-full h-[420px] sm:h-[480px] rounded-[2rem] bg-gradient-to-b from-[#16222f] to-[#0a1016] border border-white/10 overflow-hidden select-none">
+            <!-- Subtle stars -->
+            <div class="absolute inset-0 opacity-30" style="background-image: radial-gradient(white 1px, transparent 1px); background-size: 42px 42px;"></div>
+
+            <!-- Mountain Silhouette SVG -->
+            <svg class="absolute inset-0 w-full h-full" viewBox="0 0 800 480" preserveAspectRatio="none">
+              <defs>
+                <linearGradient id="mtnGrad" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stop-color="#5d7a94" stop-opacity="0.72"/>
+                  <stop offset="100%" stop-color="#0d131a" stop-opacity="0.98"/>
+                </linearGradient>
+              </defs>
+              <!-- Back ridge -->
+              <polygon points="0,480 140,340 270,380 460,210 610,275 800,190 800,480" fill="#1b2b3b" opacity="0.65"/>
+              <!-- Main climbable peak -->
+              <polygon points="0,480 95,410 210,360 340,295 470,225 585,140 675,105 800,260 800,480" fill="url(#mtnGrad)"/>
+              <!-- Glowing Climb Path -->
+              <path id="ridge-path-bg" d="M 95 410 L 210 360 L 340 295 L 470 225 L 585 140 L 675 105" stroke="rgba(255,255,255,0.22)" stroke-width="3" fill="none" stroke-dasharray="6 6"/>
+              <path id="ridge-path-active" d="M 95 410 L 210 360 L 340 295 L 470 225 L 585 140 L 675 105" stroke="#bae6fd" stroke-width="3.5" fill="none" stroke-linecap="round" stroke-dasharray="720" stroke-dashoffset="720" style="transition: stroke-dashoffset 0.65s cubic-bezier(0.22,1,0.36,1);"/>
+            </svg>
+
+            <!-- Planted Flag Markers (Positioned via %) -->
+            <div id="ridge-flags-container" class="absolute inset-0 pointer-events-none"></div>
+
+            <!-- Interactive CLIMB Button -->
+            <button id="climb-btn" onclick="advanceClimb()" class="absolute bottom-7 right-7 z-20 w-20 h-20 rounded-full bg-white text-alpine-charcoal font-mono text-xs font-bold tracking-wider shadow-[0_0_40px_rgba(186,230,253,0.55)] hover:scale-105 active:scale-95 transition flex flex-col items-center justify-center gap-0.5">
+              <span>CLIMB</span>
+              <span id="climb-step-label" class="text-[9px] text-alpine-mid">0 / 5</span>
+            </button>
+
+            <div class="absolute top-5 left-6 font-mono text-[11px] text-white/60">
+              ALTITUDE PROGRESS · <span id="ridge-alt-readout" class="text-sky-200 font-semibold">BASE 2,400M</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- =======================================================
+         11. DROP 05 COUNTDOWN & CLIMBING FOOTER (00:25 - 00:27)
+    ======================================================== -->
+    <section id="drop-countdown" class="relative min-h-[72vh] bg-[#121b24] text-white flex items-center py-24 px-4 sm:px-8 lg:px-12 overflow-hidden">
+      <img id="drop05-bg-img" alt="Drop 05 Summit Camp" class="absolute inset-0 w-full h-full object-cover opacity-55" />
+      <div class="absolute inset-0 bg-gradient-to-r from-[#0d131a]/92 via-[#121b24]/65 to-transparent"></div>
+      <canvas id="snow-canvas-drop" class="snow-canvas absolute inset-0 w-full h-full pointer-events-none z-10"></canvas>
+
+      <div class="relative z-20 max-w-[1400px] w-full mx-auto">
+        <p class="font-mono text-xs uppercase tracking-widest text-sky-300/80 mb-3">Next Drop · Under The Ice</p>
+        <h2 class="font-display-tight text-6xl sm:text-7xl lg:text-[92px] leading-[0.92] mb-8">
+          DROP 05<br />SUMMIT
+        </h2>
+
+        <!-- Live Countdown -->
+        <div class="flex flex-wrap items-center gap-5 sm:gap-8 mb-10 font-mono">
+          <div>
+            <div id="cd-days" class="font-display text-4xl sm:text-6xl">39</div>
+            <div class="text-[10px] uppercase tracking-widest text-white/60">Days</div>
+          </div>
+          <div class="text-2xl text-white/30">:</div>
+          <div>
+            <div id="cd-hours" class="font-display text-4xl sm:text-6xl">00</div>
+            <div class="text-[10px] uppercase tracking-widest text-white/60">Hours</div>
+          </div>
+          <div class="text-2xl text-white/30">:</div>
+          <div>
+            <div id="cd-mins" class="font-display text-4xl sm:text-6xl">39</div>
+            <div class="text-[10px] uppercase tracking-widest text-white/60">Min</div>
+          </div>
+          <div class="text-2xl text-white/30">:</div>
+          <div>
+            <div id="cd-secs" class="font-display text-4xl sm:text-6xl text-sky-200">33</div>
+            <div class="text-[10px] uppercase tracking-widest text-white/60">Sec</div>
+          </div>
+        </div>
+
+        <!-- Waitlist Form -->
+        <form onsubmit="handleWaitlist(event, 'Drop 05 Summit waitlist')" class="flex flex-col sm:flex-row gap-3 max-w-md">
+          <input type="email" required placeholder="Your email for first access" class="flex-1 bg-white/10 border border-white/20 rounded-full px-5 py-3 text-xs text-white placeholder:text-white/50 focus:outline-none focus:border-white" />
+          <button type="submit" class="inline-flex items-center justify-center gap-2 bg-white text-alpine-charcoal px-6 py-3 rounded-full text-xs font-semibold hover:bg-sky-100 transition">
+            <span>Join the waitlist</span>
+            <span>→</span>
+          </button>
+        </form>
+      </div>
+    </section>
+
+    <!-- Light-Gray Footer Links -->
+    <footer id="footer" class="bg-[#eef2f6] text-alpine-charcoal pt-20">
+      <div class="max-w-[1400px] mx-auto px-4 sm:px-8 lg:px-12 pb-16 grid grid-cols-1 md:grid-cols-12 gap-10">
+        <!-- Newsletter -->
+        <div class="md:col-span-5 space-y-4">
+          <h3 class="font-display-tight text-4xl sm:text-5xl">BE FIRST<br />AT ALTITUDE.</h3>
+          <p class="text-xs text-alpine-mid max-w-sm leading-relaxed">
+            New drops, private archive sales, and field dispatches. One email per drop. Nothing more.
+          </p>
+          <form onsubmit="handleWaitlist(event, 'LoveMelt altitude dispatch')" class="flex gap-2 max-w-sm">
+            <input type="email" required placeholder="Your email" class="flex-1 bg-white border border-slate-300 rounded-full px-4 py-2.5 text-xs focus:outline-none focus:border-alpine-charcoal" />
+            <button type="submit" class="bg-alpine-charcoal text-white px-5 py-2.5 rounded-full text-xs font-semibold hover:bg-alpine-deep transition">Subscribe →</button>
+          </form>
+        </div>
+
+        <!-- Shop Links -->
+        <div class="md:col-span-2 space-y-2.5 text-xs">
+          <div class="font-mono font-bold uppercase tracking-wider text-alpine-charcoal mb-3">Shop</div>
+          <a href="#collection" class="block text-alpine-mid hover:text-alpine-charcoal">All gear</a>
+          <a href="#hero" class="block text-alpine-mid hover:text-alpine-charcoal">Puffers</a>
+          <a href="#collection" class="block text-alpine-mid hover:text-alpine-charcoal">Shells &amp; Layers</a>
+          <a href="#cold-ops" class="block text-alpine-mid hover:text-alpine-charcoal">Cold Ops</a>
+          <a href="#lookbook" class="block text-alpine-mid hover:text-alpine-charcoal">Lookbook</a>
+        </div>
+
+        <!-- Help Links -->
+        <div class="md:col-span-2 space-y-2.5 text-xs">
+          <div class="font-mono font-bold uppercase tracking-wider text-alpine-charcoal mb-3">Help</div>
+          <button onclick="showToast('Free express global shipping on all FW25 orders.')" class="block text-alpine-mid hover:text-alpine-charcoal">Shipping &amp; returns</button>
+          <button onclick="showToast('2-year alpine warranty covers all down & seam repairs.')" class="block text-alpine-mid hover:text-alpine-charcoal">Warranty</button>
+          <button onclick="showToast('Order tracking activates immediately after dispatch.')" class="block text-alpine-mid hover:text-alpine-charcoal">Track order</button>
+          <button onclick="showToast('Support: basecamp@kryoth-alpine.com')" class="block text-alpine-mid hover:text-alpine-charcoal">Contact</button>
+        </div>
+
+        <!-- Studio & Social -->
+        <div class="md:col-span-3 md:text-right space-y-3 text-xs text-alpine-mid">
+          <div class="font-mono">Chamonix · 74400 France</div>
+          <div>Studio &amp; Sub-Zero Lab</div>
+          <div class="flex md:justify-end gap-2 pt-2">
+            <a href="#hero" class="w-9 h-9 rounded-full bg-alpine-charcoal text-white flex items-center justify-center hover:bg-alpine-deep transition font-mono text-[10px]">IG</a>
+            <a href="#hero" class="w-9 h-9 rounded-full bg-alpine-charcoal text-white flex items-center justify-center hover:bg-alpine-deep transition font-mono text-[10px]">TT</a>
+            <a href="#hero" class="w-9 h-9 rounded-full bg-alpine-charcoal text-white flex items-center justify-center hover:bg-alpine-deep transition font-mono text-[10px]">YT</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Panoramic Climbing LoveMelt Footer (00:27) -->
+      <div class="relative w-full h-[340px] sm:h-[440px] overflow-hidden bg-gradient-to-b from-[#eef2f6] via-[#d7e2ec] to-[#8ea5ba] flex flex-col justify-end">
+        <canvas id="snow-canvas-footer" class="snow-canvas absolute inset-0 w-full h-full pointer-events-none z-20"></canvas>
+
+        <!-- Giant LoveMelt Wordmark + Perched Illustrated Climbers -->
+        <div class="relative z-10 max-w-[1440px] w-full mx-auto px-4 flex flex-col items-center">
+          <div class="relative w-full text-center select-none">
+            <!-- Tiny Perched Alpine Climbers SVG -->
+            <svg class="absolute -top-9 sm:-top-12 left-0 w-full h-14 sm:h-20 pointer-events-none z-20" viewBox="0 0 1200 100" fill="none">
+              <!-- Climber 1 sitting on K -->
+              <g transform="translate(175, 22)">
+                <circle cx="14" cy="12" r="8" fill="#181b20"/>
+                <rect x="7" y="10" width="14" height="5" rx="2" fill="#93c5fd"/>
+                <path d="M4 22 C4 18 24 18 24 22 L28 48 L0 48 Z" fill="#dbeafe"/>
+                <path d="M6 48 L4 66 M20 48 L24 66" stroke="#181b20" stroke-width="5" stroke-linecap="round"/>
+              </g>
+              <!-- Climber 2 crouched on Y -->
+              <g transform="translate(555, 8)">
+                <circle cx="18" cy="12" r="9" fill="#181b20"/>
+                <rect x="10" y="9" width="16" height="5" rx="2" fill="#e0f2fe"/>
+                <path d="M4 23 C4 18 32 18 32 23 L36 56 L0 56 Z" fill="#6b8ba8"/>
+                <path d="M8 56 L4 74 M28 56 L32 74" stroke="#121b24" stroke-width="6" stroke-linecap="round"/>
+              </g>
+              <!-- Climber 3 rappelling near T/H -->
+              <g transform="translate(915, 28)">
+                <line x1="16" y1="-28" x2="16" y2="18" stroke="#121b24" stroke-width="2" stroke-dasharray="3 2"/>
+                <circle cx="16" cy="16" r="8" fill="#0d131a"/>
+                <path d="M6 26 C6 22 26 22 26 26 L28 52 L4 52 Z" fill="#181b20"/>
+                <path d="M9 52 L6 68 M23 52 L27 68" stroke="#0d131a" stroke-width="5" stroke-linecap="round"/>
+              </g>
+            </svg>
+
+            <div class="font-display text-[14.5vw] xl:text-[185px] leading-[0.85] tracking-tight text-[#526d87] drop-shadow-sm">
+              LoveMelt
+            </div>
+          </div>
+        </div>
+
+        <!-- Snowy Mountain Peaks Foreground Silhouette -->
+        <svg class="relative z-10 w-full h-24 sm:h-36 -mt-6" viewBox="0 0 1440 160" preserveAspectRatio="none">
+          <polygon points="0,160 120,75 260,118 420,42 590,110 740,28 920,105 1090,48 1260,115 1380,62 1440,95 1440,160" fill="#3a5268"/>
+          <polygon points="0,160 180,105 340,138 510,72 680,132 860,64 1030,128 1210,78 1440,135 1440,160" fill="#233749"/>
+        </svg>
+
+        <div class="absolute bottom-3 left-4 right-4 z-30 flex flex-wrap items-center justify-between text-[10px] font-mono text-white/75">
+          <span>© 2026 LoveMelt ALPINE LAB</span>
+          <span>Terms · Returns · Privacy · Summit 8,848 M · -19°C</span>
+        </div>
+      </div>
+    </footer>
+  </main>
+
+  <!-- =========================================================
+       3. SLIDE-OVER CART DRAWER ("YOUR CART")
+  ========================================================== -->
+  <div id="cart-backdrop" onclick="closeCartDrawer()" class="hidden fixed inset-0 z-[70] bg-black/50 backdrop-blur-sm transition-opacity"></div>
+  <aside id="cart-drawer" class="fixed top-0 right-0 bottom-0 z-[80] w-full max-w-md bg-white text-alpine-charcoal shadow-2xl transform translate-x-full transition-transform duration-400 ease-out flex flex-col">
+    <!-- Header -->
+    <div class="flex items-center justify-between p-6 border-b border-slate-100">
+      <div>
+        <h2 class="font-display text-3xl tracking-tight">YOUR CART</h2>
+        <p class="text-[11px] font-mono text-emerald-700 mt-0.5">✓ Free express alpine shipping unlocked</p>
+      </div>
+      <button onclick="closeCartDrawer()" class="w-9 h-9 rounded-full bg-alpine-charcoal text-white flex items-center justify-center hover:bg-alpine-deep transition" aria-label="Close Cart">✕</button>
+    </div>
+
+    <!-- Scrollable Cart Content -->
+    <div class="flex-1 overflow-y-auto p-6 space-y-6">
+      <div id="cart-items-list" class="space-y-4">
+        <!-- Populated by JS -->
+      </div>
+
+      <!-- Upsell Section: Pair it with -->
+      <div class="pt-5 border-t border-slate-100">
+        <div class="text-xs font-mono uppercase tracking-wider text-slate-400 mb-3">Pair it with</div>
+        <div class="space-y-3">
+          <div class="flex items-center justify-between p-3 rounded-2xl bg-slate-50 border border-slate-100">
+            <div class="flex items-center gap-3">
+              <img id="upsell-goggle-img" alt="Zenith Goggle" class="w-12 h-12 rounded-xl object-cover bg-slate-200" />
+              <div>
+                <div class="text-xs font-semibold">Zenith Goggle</div>
+                <div class="font-mono text-[11px] text-slate-500">$149.00</div>
+              </div>
+            </div>
+            <button onclick="addProductById('zenith-goggle', 'OS', this, false)" class="px-4 py-1.5 rounded-full bg-alpine-charcoal text-white text-xs font-semibold hover:bg-alpine-deep transition">Add</button>
+          </div>
+
+          <div class="flex items-center justify-between p-3 rounded-2xl bg-slate-50 border border-slate-100">
+            <div class="flex items-center gap-3">
+              <img id="upsell-beanie-img" alt="Ridge Beanie" class="w-12 h-12 rounded-xl object-cover bg-slate-200" />
+              <div>
+                <div class="text-xs font-semibold">Ridge Beanie</div>
+                <div class="font-mono text-[11px] text-slate-500">$69.00</div>
+              </div>
+            </div>
+            <button onclick="addProductById('ridge-beanie', 'OS', this, false)" class="px-4 py-1.5 rounded-full bg-alpine-charcoal text-white text-xs font-semibold hover:bg-alpine-deep transition">Add</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer / Subtotal / Checkout CTA -->
+    <div class="p-6 border-t border-slate-100 bg-slate-50/70 space-y-4">
+      <div class="flex items-center justify-between">
+        <span class="text-xs text-slate-500">Subtotal</span>
+        <span id="cart-subtotal" class="font-mono text-lg font-bold">$0.00</span>
+      </div>
+      <div class="text-[10px] text-slate-400">Express delivery ($0) · Duties &amp; taxes included</div>
+
+      <button onclick="startCheckoutTransition()" class="w-full flex items-center justify-between bg-alpine-charcoal text-white pl-6 pr-2.5 py-2.5 rounded-full font-semibold text-sm hover:bg-alpine-deep transition shadow-lg">
+        <span>Checkout</span>
+        <span class="w-8 h-8 rounded-full bg-white text-alpine-charcoal flex items-center justify-center font-bold">→</span>
+      </button>
+
+      <div class="flex items-center justify-center gap-2 pt-1 font-mono text-[10px] text-slate-400">
+        <span class="px-2 py-0.5 rounded bg-white border border-slate-200">Apple Pay</span>
+        <span class="px-2 py-0.5 rounded bg-white border border-slate-200">Google Pay</span>
+        <span class="px-2 py-0.5 rounded bg-white border border-slate-200">Visa</span>
+        <span class="px-2 py-0.5 rounded bg-white border border-slate-200">Mastercard</span>
+      </div>
+    </div>
+  </aside>
+
+  <!-- =========================================================
+       12. 2-CLICK CHECKOUT TRANSITION & FULLSCREEN PAGE (00:30 - 00:32)
+  ========================================================== -->
+  <div id="checkout-transition" class="hidden fixed inset-0 z-[95] bg-[#2b4156] text-white flex flex-col items-center justify-center gap-3">
+    <div class="font-display text-5xl sm:text-6xl tracking-wide text-white animate-pulse">LoveMelt</div>
+    <span class="font-mono text-xs uppercase tracking-widest text-white/75">Checkout</span>
+  </div>
+
+  <section id="checkout-view" class="hidden min-h-screen bg-[#4a647c] text-white pt-24 pb-20 px-4 sm:px-8 lg:px-12">
+    <div class="max-w-[1280px] mx-auto">
+      <div class="flex flex-wrap items-center justify-between gap-4 mb-8">
+        <div>
+          <button onclick="exitCheckout()" class="font-mono text-xs text-white/75 hover:text-white mb-2 inline-flex items-center gap-1.5">← Back to store</button>
+          <h1 class="font-display-tight text-5xl sm:text-6xl">CHECKOUT</h1>
+        </div>
+        <div class="font-mono text-xs text-white/75">Secure SSL · 30-day free returns</div>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+        <!-- Left Checkout Form -->
+        <div class="lg:col-span-7 space-y-6">
+          <!-- Express Checkout -->
+          <div class="p-6 rounded-3xl bg-white/10 backdrop-blur-md border border-white/15">
+            <div class="font-mono text-[11px] uppercase tracking-wider text-white/70 mb-3">Express Checkout</div>
+            <div class="grid grid-cols-3 gap-3">
+              <button onclick="completeOrder('Apple Pay')" class="py-3 rounded-xl bg-[#0d131a] text-white text-xs font-semibold hover:bg-black transition"> Pay</button>
+              <button onclick="completeOrder('Google Pay')" class="py-3 rounded-xl bg-[#181b20] text-white text-xs font-semibold hover:bg-black transition">G Pay</button>
+              <button onclick="completeOrder('PayPal')" class="py-3 rounded-xl bg-white text-[#003087] text-xs font-bold hover:bg-sky-50 transition">PayPal</button>
+            </div>
+          </div>
+
+          <!-- Contact & Delivery Form -->
+          <form onsubmit="event.preventDefault(); completeOrder('Card');" class="space-y-6">
+            <div class="p-6 rounded-3xl bg-white/10 backdrop-blur-md border border-white/15 space-y-4">
+              <div class="font-mono text-xs font-semibold tracking-wider text-sky-200">01 · CONTACT</div>
+              <input type="email" required placeholder="Email address" class="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-3 text-sm text-white placeholder:text-white/50 focus:outline-none focus:border-white" />
+              <label class="flex items-center gap-2.5 text-xs text-white/80 cursor-pointer">
+                <input type="checkbox" checked class="rounded accent-alpine-charcoal" />
+                <span>Tell me about new alpine drops before anyone else</span>
+              </label>
+            </div>
+
+            <div class="p-6 rounded-3xl bg-white/10 backdrop-blur-md border border-white/15 space-y-4">
+              <div class="font-mono text-xs font-semibold tracking-wider text-sky-200">02 · DELIVERY</div>
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <input type="text" required placeholder="First name" class="bg-white/10 border border-white/20 rounded-xl px-4 py-3 text-sm text-white placeholder:text-white/50 focus:outline-none focus:border-white" />
+                <input type="text" required placeholder="Last name" class="bg-white/10 border border-white/20 rounded-xl px-4 py-3 text-sm text-white placeholder:text-white/50 focus:outline-none focus:border-white" />
+              </div>
+              <input type="text" required placeholder="Street address" class="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-3 text-sm text-white placeholder:text-white/50 focus:outline-none focus:border-white" />
+              <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                <input type="text" required placeholder="City" class="bg-white/10 border border-white/20 rounded-xl px-4 py-3 text-sm text-white placeholder:text-white/50 focus:outline-none focus:border-white" />
+                <input type="text" required placeholder="Postal code" class="bg-white/10 border border-white/20 rounded-xl px-4 py-3 text-sm text-white placeholder:text-white/50 focus:outline-none focus:border-white" />
+                <input type="text" required placeholder="Country" value="France" class="bg-white/10 border border-white/20 rounded-xl px-4 py-3 text-sm text-white placeholder:text-white/50 focus:outline-none focus:border-white" />
+              </div>
+              <button type="submit" class="w-full mt-2 py-4 rounded-full bg-white text-alpine-charcoal font-semibold text-sm hover:bg-sky-100 transition shadow-xl">
+                Complete Order →
+              </button>
+            </div>
+          </form>
+        </div>
+
+        <!-- Right Sticky Cart Summary -->
+        <div class="lg:col-span-5 lg:sticky lg:top-24 rounded-3xl bg-[#2b4156]/90 border border-white/15 overflow-hidden shadow-2xl">
+          <div class="h-44 relative overflow-hidden">
+            <img id="checkout-preview-img" alt="Order Preview" class="w-full h-full object-cover" />
+            <div class="absolute inset-0 bg-gradient-to-t from-[#2b4156] via-transparent to-transparent"></div>
+          </div>
+          <div class="p-6 space-y-4">
+            <div class="flex items-center justify-between">
+              <h2 class="font-display text-2xl">YOUR CART</h2>
+              <span id="checkout-count" class="font-mono text-xs text-sky-200">0 items</span>
+            </div>
+            <div id="checkout-items-list" class="space-y-3 max-h-60 overflow-y-auto pr-1"></div>
+            <div class="pt-4 border-t border-white/15 space-y-2 text-xs">
+              <div class="flex justify-between text-white/75"><span>Express Alpine Shipping</span><span class="font-mono text-emerald-300">FREE</span></div>
+              <div class="flex justify-between text-base font-bold pt-2"><span>Total</span><span id="checkout-total" class="font-mono">$0.00</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Order Confirmation Modal -->
+  <div id="order-modal" class="hidden fixed inset-0 z-[98] bg-black/70 backdrop-blur-md flex items-center justify-center p-4">
+    <div class="max-w-md w-full rounded-3xl bg-[#121b24] text-white border border-white/15 p-8 text-center space-y-4 shadow-2xl">
+      <div class="w-14 h-14 rounded-full bg-emerald-400/20 text-emerald-300 mx-auto flex items-center justify-center text-2xl">✓</div>
+      <h3 class="font-display text-4xl">EXPEDITION CONFIRMED</h3>
+      <p id="order-modal-msg" class="text-xs text-white/75 leading-relaxed"></p>
+      <div class="font-mono text-xs bg-white/5 rounded-xl p-3 text-sky-200">ORDER #LM-8848</div>
+      <button onclick="closeOrderModal()" class="w-full py-3 rounded-full bg-white text-alpine-charcoal font-semibold text-xs hover:bg-sky-100 transition">Return to Storefront</button>
+    </div>
+  </div>
+
+  <!-- Lookbook Lightbox Modal -->
+  <div id="lightbox-modal" class="hidden fixed inset-0 z-[90] bg-black/90 backdrop-blur-lg flex items-center justify-center p-4">
+    <button onclick="closeLightbox()" class="absolute top-6 right-6 w-10 h-10 rounded-full bg-white/15 text-white hover:bg-white/25 transition">✕</button>
+    <button onclick="stepLightbox(-1)" class="absolute left-4 sm:left-8 w-11 h-11 rounded-full bg-white/15 text-white hover:bg-white/25 transition">←</button>
+    <div class="max-w-3xl w-full flex flex-col items-center gap-4">
+      <img id="lightbox-img" alt="Lookbook Frame" class="max-h-[75vh] w-auto rounded-2xl shadow-2xl border border-white/15 object-contain" />
+      <div id="lightbox-caption" class="font-mono text-xs text-white/80"></div>
+    </div>
+    <button onclick="stepLightbox(1)" class="absolute right-4 sm:right-8 w-11 h-11 rounded-full bg-white/15 text-white hover:bg-white/25 transition">→</button>
+  </div>
+
+  <!-- Search Modal -->
+  <div id="search-modal" class="hidden fixed inset-0 z-[90] bg-black/65 backdrop-blur-md flex items-start justify-center pt-24 p-4">
+    <div class="max-w-xl w-full rounded-3xl bg-[#121b24] text-white border border-white/15 p-6 shadow-2xl">
+      <div class="flex items-center justify-between mb-4">
+        <span class="font-mono text-xs uppercase tracking-wider text-sky-200">Search LoveMelt Catalog</span>
+        <button onclick="closeSearchModal()" class="text-white/60 hover:text-white">✕</button>
+      </div>
+      <input id="search-input" oninput="renderSearchResults(this.value)" type="text" placeholder="Search puffers, goggles, boots..." class="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-3 text-sm text-white placeholder:text-white/50 focus:outline-none focus:border-white mb-4" />
+      <div id="search-results" class="space-y-2 max-h-64 overflow-y-auto"></div>
+    </div>
+  </div>
+
+  <!-- Toast Container -->
+  <div id="toast-box" class="fixed top-20 right-4 z-[99] flex flex-col gap-2 pointer-events-none"></div>
+
+  <!-- =========================================================
+       APPLICATION JAVASCRIPT
+  ========================================================== -->
+  <script>
+    // ===========================================================
+    // 1. STYLIZED FALLBACK SVG ARTWORK GENERATOR (MILLISECOND 1)
+    // ===========================================================
+    function makeJacketSVG(primary, highlight, shadow, accent, label) {
+      const svg = `
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 800">
+          <defs>
+            <radialGradient id="bg" cx="50%" cy="38%" r="70%">
+              <stop offset="0%" stop-color="${highlight}" stop-opacity="0.45"/>
+              <stop offset="100%" stop-color="${shadow}" stop-opacity="0.98"/>
+            </radialGradient>
+            <linearGradient id="puff" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stop-color="${highlight}"/>
+              <stop offset="55%" stop-color="${primary}"/>
+              <stop offset="100%" stop-color="${shadow}"/>
+            </linearGradient>
+          </defs>
+          <rect width="600" height="800" fill="url(#bg)"/>
+          <!-- Snow speckles -->
+          <g fill="#ffffff" opacity="0.45">
+            <circle cx="80" cy="110" r="2.5"/><circle cx="510" cy="140" r="3"/><circle cx="140" cy="280" r="2"/>
+            <circle cx="480" cy="360" r="2.5"/><circle cx="95" cy="520" r="2"/><circle cx="530" cy="610" r="3"/>
+          </g>
+          <!-- Hood & Ski Goggles -->
+          <ellipse cx="300" cy="175" rx="88" ry="96" fill="url(#puff)" stroke="${highlight}" stroke-width="2"/>
+          <ellipse cx="300" cy="178" rx="54" ry="56" fill="#0d131a"/>
+          <rect x="252" y="152" width="96" height="44" rx="22" fill="${accent}" stroke="#ffffff" stroke-width="3"/>
+          <path d="M265 162 Q300 152 334 166" stroke="#ffffff" stroke-width="4" stroke-linecap="round" opacity="0.65" fill="none"/>
+          <!-- Puffer Baffle Torso -->
+          <rect x="172" y="252" width="256" height="78" rx="36" fill="url(#puff)" stroke="${shadow}" stroke-opacity="0.4" stroke-width="3"/>
+          <rect x="164" y="322" width="272" height="82" rx="38" fill="url(#puff)" stroke="${shadow}" stroke-opacity="0.4" stroke-width="3"/>
+          <rect x="168" y="396" width="264" height="82" rx="38" fill="url(#puff)" stroke="${shadow}" stroke-opacity="0.4" stroke-width="3"/>
+          <rect x="176" y="470" width="248" height="80" rx="36" fill="url(#puff)" stroke="${shadow}" stroke-opacity="0.4" stroke-width="3"/>
+          <!-- Sleeves -->
+          <rect x="92" y="270" width="92" height="275" rx="44" transform="rotate(9 138 400)" fill="url(#puff)" stroke="${shadow}" stroke-opacity="0.35" stroke-width="3"/>
+          <rect x="416" y="270" width="92" height="275" rx="44" transform="rotate(-9 462 400)" fill="url(#puff)" stroke="${shadow}" stroke-opacity="0.35" stroke-width="3"/>
+          <!-- Center Waterproof Zipper -->
+          <line x1="300" y1="252" x2="300" y2="550" stroke="#0d131a" stroke-width="6"/>
+          <rect x="294" y="268" width="12" height="22" rx="4" fill="#ffffff"/>
+          <!-- Lower Alpine Pants -->
+          <path d="M202 552 L398 552 L420 790 L312 790 L300 635 L288 790 L180 790 Z" fill="#18222d" opacity="0.85"/>
+          <text x="300" y="756" text-anchor="middle" fill="#ffffff" opacity="0.5" font-family="monospace" font-size="16" letter-spacing="4">${label}</text>
+        </svg>`;
+      return 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(svg);
+    }
+
+    function makeGearSVG(title, accent, bg1, bg2, iconType) {
+      let shape = '';
+      if (iconType === 'goggle') {
+        shape = `<rect x="115" y="185" width="270" height="120" rx="54" fill="${accent}" stroke="#ffffff" stroke-width="10"/><path d="M145 215 Q250 190 355 225" stroke="#ffffff" stroke-width="10" opacity="0.55" fill="none"/>`;
+      } else if (iconType === 'boot') {
+        shape = `<path d="M180 120 L290 120 L305 280 L380 315 L380 365 L165 365 Z" fill="${accent}" stroke="#ffffff" stroke-width="6" stroke-linejoin="round"/><rect x="160" y="355" width="225" height="26" rx="10" fill="#0d131a"/>`;
+      } else if (iconType === 'mitt') {
+        shape = `<rect x="175" y="120" width="150" height="235" rx="70" fill="${accent}" stroke="#ffffff" stroke-width="6"/><rect x="130" y="210" width="75" height="115" rx="34" transform="rotate(-22 165 265)" fill="${accent}" stroke="#ffffff" stroke-width="6"/>`;
+      } else {
+        shape = `<circle cx="250" cy="235" r="105" fill="${accent}" stroke="#ffffff" stroke-width="6"/><path d="M150 260 Q250 290 350 260" stroke="#0d131a" stroke-width="8" fill="none" opacity="0.45"/>`;
+      }
+      const svg = `
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 500">
+          <defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="${bg1}"/><stop offset="100%" stop-color="${bg2}"/></linearGradient></defs>
+          <rect width="500" height="500" fill="url(#g)"/>
+          ${shape}
+          <text x="250" y="455" text-anchor="middle" fill="#ffffff" opacity="0.55" font-family="monospace" font-size="16" letter-spacing="3">${title}</text>
+        </svg>`;
+      return 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(svg);
+    }
+
+    function makeAlpineSceneSVG(topCol, midCol, botCol, label) {
+      const svg = `
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 600">
+          <defs><linearGradient id="s" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="${topCol}"/><stop offset="60%" stop-color="${midCol}"/><stop offset="100%" stop-color="${botCol}"/></linearGradient></defs>
+          <rect width="900" height="600" fill="url(#s)"/>
+          <polygon points="0,600 180,260 340,390 540,145 730,340 900,220 900,600" fill="#1e3144" opacity="0.8"/>
+          <polygon points="540,145 480,245 520,235 555,260 595,220" fill="#eef6ff" opacity="0.85"/>
+          <polygon points="0,600 120,410 310,490 480,320 670,470 900,360 900,600" fill="#0f1a26" opacity="0.92"/>
+          <text x="450" y="560" text-anchor="middle" fill="#ffffff" opacity="0.4" font-family="monospace" font-size="18" letter-spacing="5">${label}</text>
+        </svg>`;
+      return 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(svg);
+    }
+
+    // ===========================================================
+    // 2. CATALOG & NANO BANANA ASSET DEFINITIONS
+    // ===========================================================
+    const HERO_COLOURWAYS = [
+      {
+        id: 'arctic01',
+        name: 'ARCTIC 01',
+        subtitle: 'Ice Blue',
+        drop: 'Drop 01 · Arctic',
+        price: 899,
+        spec: 'Rated -40°C · 800FP goose down',
+        bg: 'radial-gradient(circle at 52% 45%, #7b9bb8 0%, #52708b 48%, #344d64 100%)',
+        swatch: '#9dc0de',
+        assetKey: 'hero_arctic01',
+        fallback: makeJacketSVG('#8fb4d4', '#cfe4f7', '#354f67', '#1e3a5f', 'ARCTIC 01 · ICE BLUE'),
+        prompt: 'High-fashion luxury alpine outerwear editorial studio portrait of a model from waist up wearing an oversized ice-blue quilted down puffer jacket with high storm collar and mirrored ski goggles, soft falling snow particles, slate-blue alpine studio background, crisp architectural lighting, ultra photorealistic 8k fashion photography'
+      },
+      {
+        id: 'aurora',
+        name: 'AURORA',
+        subtitle: 'Pearl Frost',
+        drop: 'Drop 01 · Aurora',
+        price: 1099,
+        spec: 'Rated -42°C · 850FP hydrophobic down',
+        bg: 'radial-gradient(circle at 52% 45%, #2d6f7e 0%, #1e425e 48%, #141f3a 100%)',
+        swatch: '#e8eff5',
+        assetKey: 'hero_aurora',
+        fallback: makeJacketSVG('#dce6ef', '#ffffff', '#63798e', '#38bdf8', 'AURORA · PEARL FROST'),
+        prompt: 'High-fashion luxury alpine outerwear editorial studio portrait of a model from waist up wearing an oversized iridescent pearl-silver white quilted down puffer jacket with mirrored chrome ski goggles, subtle falling snow, cool grey-blue alpine studio backdrop, ultra photorealistic 8k fashion photography'
+      },
+      {
+        id: 'stealth',
+        name: 'STEALTH',
+        subtitle: 'Matte Black',
+        drop: 'Drop 01 · Night',
+        price: 1199,
+        spec: 'Rated -45°C · 850FP ballistic down',
+        bg: 'radial-gradient(circle at 52% 45%, #2c353f 0%, #192028 48%, #0d1218 100%)',
+        swatch: '#181b20',
+        assetKey: 'hero_stealth',
+        fallback: makeJacketSVG('#232830', '#485260', '#0a0d12', '#111827', 'STEALTH · MATTE BLACK'),
+        prompt: 'High-fashion luxury alpine outerwear editorial studio portrait of a model from waist up wearing an oversized matte obsidian black quilted down puffer jacket with dark smoked ski goggles, subtle falling snow, moody dark charcoal slate studio backdrop, dramatic rim lighting, ultra photorealistic 8k fashion photography'
+      },
+      {
+        id: 'polar-goose',
+        name: 'POLAR GOOSE',
+        subtitle: 'Glacier White',
+        drop: 'Drop 01 · Glacier',
+        price: 949,
+        spec: 'Rated -38°C · 800FP goose down',
+        bg: 'radial-gradient(circle at 52% 45%, #b8cad9 0%, #869fb5 48%, #526a80 100%)',
+        swatch: '#f4f7fa',
+        assetKey: 'hero_polar',
+        fallback: makeJacketSVG('#c8d9e8', '#f5f9fc', '#4c657d', '#0ea5e9', 'POLAR GOOSE · GLACIER'),
+        prompt: 'High-fashion luxury alpine outerwear editorial studio portrait of a model from waist up wearing a heavy glacier-white expedition down parka jacket with tinted alpine ski goggles, subtle snowflakes, cool misty slate-blue studio background, ultra photorealistic 8k fashion photography'
+      }
+    ];
+
+    const COLLECTION_PRODUCTS = [
+      { id: 'arctic01', name: 'ARCTIC 01', desc: 'Insulated glacier puffer', price: 899, badge: 'NEW', assetKey: 'hero_arctic01', swatches: ['#9dc0de', '#181b20', '#e8eff5'], fallback: HERO_COLOURWAYS[0].fallback },
+      { id: 'stealth', name: 'STEALTH', desc: 'Matte obsidian puffer', price: 1199, badge: 'HOT', assetKey: 'hero_stealth', swatches: ['#181b20', '#4a647c'], fallback: HERO_COLOURWAYS[2].fallback },
+      { id: 'glacier-drop', name: 'GLACIER DROP', desc: 'Cropped alpine shell', price: 799, badge: 'NEW', assetKey: 'hero_aurora', swatches: ['#e8eff5', '#9dc0de'], fallback: HERO_COLOURWAYS[1].fallback },
+      { id: 'polar-goose', name: 'POLAR GOOSE', desc: 'Heavy expedition parka', price: 949, badge: '', assetKey: 'hero_polar', swatches: ['#f4f7fa', '#2b4156'], fallback: HERO_COLOURWAYS[3].fallback },
+      { id: 'icefield-parka', name: 'ICEFIELD PARKA', desc: 'Long stormproof down', price: 1249, badge: 'NEW', assetKey: 'hero_stealth', swatches: ['#1f2937', '#5d7a94'], fallback: makeJacketSVG('#344c63', '#6b8aa8', '#15222f', '#38bdf8', 'ICEFIELD PARKA') },
+      { id: 'spindrift-shell', name: 'SPINDRIFT SHELL', desc: '3-layer Gore ripstop', price: 689, badge: '', assetKey: 'hero_arctic01', swatches: ['#5d7a94', '#181b20'], fallback: makeJacketSVG('#5d7a94', '#94b5d1', '#253749', '#0284c7', 'SPINDRIFT SHELL') },
+      { id: 'ridge-fleece', name: 'RIDGE FLEECE', desc: 'High-pile thermal midlayer', price: 249, badge: '', assetKey: 'hero_polar', swatches: ['#cbd5e1', '#1e293b'], fallback: makeJacketSVG('#94a3b8', '#e2e8f0', '#334155', '#0f172a', 'RIDGE FLEECE') },
+      { id: 'apex-bib', name: 'APEX BIB', desc: 'Reinforced snow overall', price: 429, badge: 'HOT', assetKey: 'hero_aurora', swatches: ['#64748b', '#0f172a'], fallback: makeJacketSVG('#475569', '#94a3b8', '#1e293b', '#38bdf8', 'APEX BIB') }
+    ];
+
+    const COLD_OPS_GEAR = [
+      { id: 'zenith-goggle', name: 'ZENITH GOGGLE', desc: 'Frameless mirrored ski goggle', price: 149, sizes: ['OS'], assetKey: 'gear_goggle', fallback: makeGearSVG('ZENITH GOGGLE', '#38bdf8', '#223344', '#0e1720', 'goggle'), prompt: 'Luxury product studio photography of sleek frameless alpine ski goggles with iridescent ice-blue mirrored lens and matte black strap, dramatic dark charcoal studio lighting, 8k photorealistic' },
+      { id: 'veil-balaclava', name: 'VEIL BALACLAVA', desc: 'Merino thermal face hood', price: 79, sizes: ['S/M', 'L/XL'], assetKey: 'gear_balaclava', fallback: makeGearSVG('VEIL BALACLAVA', '#475569', '#253240', '#0e1720', 'hood'), prompt: 'Luxury product studio photography of a technical slate-grey merino wool alpine balaclava thermal hood with subtle knit texture on dark charcoal background, 8k photorealistic' },
+      { id: 'traverse-boot', name: 'TRAVERSE BOOT', desc: 'Insulated Vibram snow boot', price: 329, sizes: ['40', '42', '44', '46'], assetKey: 'gear_boot', fallback: makeGearSVG('TRAVERSE BOOT', '#cbd5e1', '#26384a', '#0e1720', 'boot'), prompt: 'Luxury product studio photography of futuristic insulated ice-grey and white alpine expedition snow boots with chunky black Vibram sole on dark charcoal studio background, 8k photorealistic' },
+      { id: 'summit-mitt', name: 'SUMMIT MITT', desc: 'Waterproof down expedition mitt', price: 149, sizes: ['S', 'M', 'L'], assetKey: 'gear_mitt', fallback: makeGearSVG('SUMMIT MITT', '#6082a3', '#223344', '#0e1720', 'mitt'), prompt: 'Luxury product studio photography of insulated slate-blue and black waterproof down alpine expedition mittens on dark charcoal background, crisp lighting, 8k photorealistic' },
+      { id: 'ridge-beanie', name: 'RIDGE BEANIE', desc: 'Chunky ribbed merino beanie', price: 69, sizes: ['OS'], assetKey: 'gear_beanie', fallback: makeGearSVG('RIDGE BEANIE', '#94a3b8', '#253240', '#0e1720', 'beanie'), prompt: 'Luxury product studio photography of a chunky ribbed ice-grey merino wool alpine watch cap beanie on dark charcoal studio background, ultra sharp 8k photorealistic' },
+      { id: 'misty-gaiter', name: 'MISTY GAITER', desc: 'Fleece-lined neck warmer', price: 59, sizes: ['OS'], assetKey: 'gear_gaiter', fallback: makeGearSVG('MISTY GAITER', '#64748b', '#223344', '#0e1720', 'gaiter'), prompt: 'Luxury product studio photography of a technical slate-blue fleece-lined alpine neck gaiter warmer on dark charcoal studio background, crisp lighting, 8k photorealistic' }
+    ];
+
+    const SCENE_ASSETS = {
+      floating_jacket: {
+        label: 'Floating Arctic 01 Cutout',
+        aspectRatio: '3:4',
+        fallback: makeJacketSVG('#96bad9', '#d8ecfc', '#3b566e', '#1e3a5f', 'FLOATING ARCTIC 01'),
+        prompt: 'Dramatic floating 3D angled product shot of an inflated ice-blue technical down puffer jacket hovering mid-air against a clean moody slate-blue snowy backdrop, crisp studio rim lighting, luxury technical outerwear, 8k photorealistic'
+      },
+      mountain_peaks: {
+        label: 'Alpine Peaks Panorama',
+        aspectRatio: '16:9',
+        fallback: makeAlpineSceneSVG('#5d7a94', '#395168', '#15222e', 'CHAMONIX PEAKS · 4,808M'),
+        prompt: 'Cinematic dramatic snow-capped jagged alpine mountain peaks in winter windstorm, blowing spindrift snow, moody slate-blue twilight atmosphere, National Geographic 8k photography'
+      },
+      portrait_few: {
+        label: 'Alpine Explorer Portrait',
+        aspectRatio: '16:9',
+        fallback: makeAlpineSceneSVG('#64829e', '#3d566d', '#1c2b3a', 'NOT FOR MANY · FOR THE FEW'),
+        prompt: 'Cinematic close-up portrait of an alpine mountaineer wearing an ice-blue down puffer jacket and mirrored ski goggles standing in front of towering snow-covered Himalayan peaks, atmospheric drifting snow, 8k editorial photography'
+      },
+      drop05_camp: {
+        label: 'Drop 05 Base Camp',
+        aspectRatio: '16:9',
+        fallback: makeAlpineSceneSVG('#1b2a38', '#121b24', '#080d12', 'DROP 05 · SUMMIT CAMP'),
+        prompt: 'Moody blue-hour alpine expedition camp with a dark technical mountain tent and a lone explorer in a black down parka standing against towering snowy peaks, blowing snow, cinematic 8k photography'
+      }
+    };
+
+    const SUMMIT_REVIEWS = [
+      { alt: '2,800M', x: 26, y: 74, rating: 3.6, author: 'Lukas V.', location: 'Zermatt, CH', product: 'Arctic 01', text: 'Zero wind penetration at -18°C on the Gornergrat ridge. Feels weightless.' },
+      { alt: '4,200M', x: 42, y: 61, rating: 4.1, author: 'Elena M.', location: 'Chamonix, FR', product: 'Aurora', text: 'Wore it over a single merino base layer above Aiguille du Midi. Instant warmth.' },
+      { alt: '5,800M', x: 58, y: 47, rating: 4.5, author: 'Kenji T.', location: 'Hokkaido, JP', product: 'Stealth', text: 'Matte ripstop sheds wet snow effortlessly. The storm hood seals like a vault.' },
+      { alt: '7,400M', x: 73, y: 29, rating: 4.7, author: 'Soren K.', location: 'Tromsø, NO', product: 'Polar Goose', text: 'Survived a 36-hour Arctic whiteout. Still looks straight out of the studio.' },
+      { alt: '8,848M', x: 84, y: 22, rating: 4.9, author: 'Aimen R.', location: 'Khumbu Icefall', product: 'Arctic 01 + Zenith', text: 'Engineered without vanity. When the cold hits, everything else genuinely goes quiet.' }
+    ];
+
+    // ===========================================================
+    // 3. STATE MANAGEMENT
+    // ===========================================================
+    let activeHeroIdx = 0;
+    let selectedHeroSize = 'M';
+    let cart = [];
+    let wishlist = new Set();
+    let climbStep = 0;
+    let currentLightboxIdx = 0;
+    const generatedImages = {
+      hero_arctic01: 'assets/hero-arctic01.webp',
+      hero_aurora: 'assets/hero-aurora.webp',
+      hero_stealth: 'assets/hero-stealth.webp',
+      hero_polar: 'assets/hero-polar.webp',
+      floating_jacket: 'assets/floating-jacket.webp',
+      mountain_peaks: 'assets/mountain-peaks.webp',
+      portrait_few: 'assets/portrait-few.webp',
+      drop05_camp: 'assets/drop05-camp.webp',
+      gear_goggle: 'assets/gear-goggle.webp',
+      gear_balaclava: 'assets/gear-balaclava.webp',
+      gear_boot: 'assets/gear-boot.webp',
+      gear_mitt: 'assets/gear-mitt.webp',
+      gear_beanie: 'assets/gear-beanie.webp',
+      gear_gaiter: 'assets/gear-gaiter.webp'
+    }; // baked photoreal assets (generated 2026-11-22); SVG fallbacks remain underneath
+
+    // Load cached Nano Banana images from localStorage safely
+    try {
+      const saved = localStorage.getItem('kryoth_nb_cache_v1');
+      if (saved) Object.assign(generatedImages, JSON.parse(saved));
+    } catch (e) {}
+
+    function saveNBCache() {
+      try {
+        localStorage.setItem('kryoth_nb_cache_v1', JSON.stringify(generatedImages));
+      } catch (e) {
+        // Ignore quota exceeded
+      }
+    }
+
+    function getAssetSrc(key, fallback) {
+      return generatedImages[key] || fallback;
+    }
+
+    // ===========================================================
+    // 4. NANO BANANA (GEMINI 3.1 FLASH IMAGE) ENGINE
+    // ===========================================================
+    const NB_MANIFEST = [
+      ...HERO_COLOURWAYS.map(c => ({ key: c.assetKey, label: c.name + ' Jacket', prompt: c.prompt, aspectRatio: '3:4' })),
+      { key: 'floating_jacket', ...SCENE_ASSETS.floating_jacket },
+      ...COLD_OPS_GEAR.map(g => ({ key: g.assetKey, label: g.name, prompt: g.prompt, aspectRatio: '1:1' })),
+      { key: 'mountain_peaks', ...SCENE_ASSETS.mountain_peaks },
+      { key: 'portrait_few', ...SCENE_ASSETS.portrait_few },
+      { key: 'drop05_camp', ...SCENE_ASSETS.drop05_camp }
+    ];
+
+    let nbGeneratingCount = 0;
+
+    async function fetchNanoBananaImage(prompt, aspectRatio = '3:4', maxRetries = 3) {
+      const apiKey = "";
+      const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-image:generateContent?key=${apiKey}`;
+      const payload = {
+        contents: [{ role: 'user', parts: [{ text: prompt }] }],
+        generationConfig: {
+          responseModalities: ['IMAGE'],
+          imageConfig: { aspectRatio }
+        }
+      };
+
+      for (let attempt = 0; attempt < maxRetries; attempt++) {
+        try {
+          const res = await fetch(apiUrl, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+          });
+          if (!res.ok) throw new Error(`HTTP ${res.status}`);
+          const data = await res.json();
+          const part = data?.candidates?.[0]?.content?.parts?.find(p => p.inlineData);
+          if (part?.inlineData?.data) {
+            return `data:${part.inlineData.mimeType || 'image/png'};base64,${part.inlineData.data}`;
+          }
+          throw new Error('No image part returned');
+        } catch (err) {
+          if (attempt < maxRetries - 1) {
+            await new Promise(r => setTimeout(r, 1000 * Math.pow(2, attempt)));
+          } else {
+            return null;
+          }
+        }
+      }
+      return null;
+    }
+
+    async function generateSingleAsset(asset, force = false) {
+      if (!force && generatedImages[asset.key]) return true;
+      nbGeneratingCount++;
+      updateNBStatusUI();
+      const url = await fetchNanoBananaImage(asset.prompt, asset.aspectRatio);
+      nbGeneratingCount = Math.max(0, nbGeneratingCount - 1);
+      if (url) {
+        generatedImages[asset.key] = url;
+        saveNBCache();
+        refreshAllVisuals();
+      }
+      updateNBStatusUI();
+      return !!url;
+    }
+
+    async function generateAllNanoBanana(force = false) {
+      showToast('Nano Banana Studio: Generating photorealistic alpine assets...');
+      // Prioritize Hero 4 jackets + floating jacket first in small parallel batches
+      for (let i = 0; i < NB_MANIFEST.length; i += 2) {
+        const batch = NB_MANIFEST.slice(i, i + 2);
+        await Promise.all(batch.map(item => generateSingleAsset(item, force)));
+      }
+      updateNBStatusUI();
+    }
+
+    function clearNBCache() {
+      Object.keys(generatedImages).forEach(k => delete generatedImages[k]);
+      try { localStorage.removeItem('kryoth_nb_cache_v1'); } catch (e) {}
+      refreshAllVisuals();
+      updateNBStatusUI();
+      showToast('Nano Banana cache cleared.');
+    }
+
+    function toggleNBDrawer() {
+      document.getElementById('nb-studio-drawer').classList.toggle('hidden');
+      updateNBStatusUI();
+    }
+
+    function updateNBStatusUI() {
+      const done = NB_MANIFEST.filter(m => !!generatedImages[m.key]).length;
+      const total = NB_MANIFEST.length;
+      const dot = document.getElementById('nb-status-dot');
+      const txt = document.getElementById('nb-status-text');
+
+      if (nbGeneratingCount > 0) {
+        dot.className = 'w-2 h-2 rounded-full bg-amber-300 animate-ping';
+        txt.textContent = `Nano Banana · Rendering (${done}/${total})`;
+      } else if (done === total) {
+        dot.className = 'w-2 h-2 rounded-full bg-emerald-400';
+        txt.textContent = `Nano Banana · Ready (${done}/${total})`;
+      } else {
+        dot.className = 'w-2 h-2 rounded-full bg-sky-300';
+        txt.textContent = `Nano Banana Studio (${done}/${total})`;
+      }
+
+      const list = document.getElementById('nb-asset-list');
+      if (list) {
+        list.innerHTML = NB_MANIFEST.map(m => {
+          const ready = !!generatedImages[m.key];
+          return `
+            <div class="flex items-center justify-between py-1.5 px-2 rounded-lg bg-white/5">
+              <span class="truncate pr-2 text-white/85">${m.label}</span>
+              <button onclick="regenerateOne('${m.key}')" class="px-2 py-0.5 rounded text-[10px] font-mono ${ready ? 'bg-emerald-500/20 text-emerald-300' : 'bg-white/15 text-white hover:bg-white/25'}">
+                ${ready ? 'Ready ↻' : 'Generate'}
+              </button>
+            </div>`;
+        }).join('');
+      }
+    }
+
+    function regenerateOne(key) {
+      const item = NB_MANIFEST.find(m => m.key === key);
+      if (item) generateSingleAsset(item, true);
+    }
+
+    // ===========================================================
+    // 5. RENDERING ALL SECTIONS
+    // ===========================================================
+    function renderHero() {
+      const item = HERO_COLOURWAYS[activeHeroIdx];
+      document.getElementById('hero').style.background = item.bg;
+      document.getElementById('hero-model-img').src = getAssetSrc(item.assetKey, item.fallback);
+      document.getElementById('hero-drop-label').textContent = item.drop;
+      document.getElementById('hero-title').textContent = item.name;
+      document.getElementById('hero-price').textContent = `$${item.price.toLocaleString()}`;
+      document.getElementById('hero-spec-1').textContent = item.spec;
+      document.getElementById('hero-counter').textContent = `0${activeHeroIdx + 1}`;
+
+      const stack = document.getElementById('colourway-stack');
+      stack.innerHTML = HERO_COLOURWAYS.map((c, idx) => {
+        const isActive = idx === activeHeroIdx;
+        return `
+          <button onclick="selectHeroColourway(${idx})" class="flex items-center gap-3 p-2.5 rounded-2xl text-left transition-all ${isActive ? 'bg-white/25 border border-white/60 shadow-lg scale-[1.02]' : 'bg-white/10 border border-white/15 hover:bg-white/18'} backdrop-blur-md text-white">
+            <img src="${getAssetSrc(c.assetKey, c.fallback)}" alt="${c.name}" class="w-12 h-14 rounded-xl object-cover shrink-0 border border-white/20" />
+            <div class="min-w-0">
+              <div class="font-display text-lg tracking-wide leading-tight truncate">${c.name}</div>
+              <div class="font-mono text-[11px] text-white/75">$${c.price.toLocaleString()}</div>
+            </div>
+          </button>`;
+      }).join('');
+    }
+
+    function selectHeroColourway(idx) {
+      if (idx === activeHeroIdx) return;
+      activeHeroIdx = idx;
+      const hero = document.getElementById('hero');
+      hero.classList.remove('bursting');
+      void hero.offsetWidth;
+      hero.classList.add('bursting');
+      setTimeout(() => renderHero(), 240);
+      setTimeout(() => hero.classList.remove('bursting'), 660);
+    }
+
+    function renderCollectionGrid() {
+      document.getElementById('editorial-aurora-img').src = getAssetSrc(HERO_COLOURWAYS[1].assetKey, HERO_COLOURWAYS[1].fallback);
+      const grid = document.getElementById('collection-grid');
+      grid.innerHTML = COLLECTION_PRODUCTS.map(p => {
+        const liked = wishlist.has(p.id);
+        return `
+          <div class="product-card relative rounded-[1.5rem] bg-white overflow-hidden shadow-sm border border-slate-200/70 flex flex-col">
+            <div class="relative aspect-[4/5] overflow-hidden bg-slate-200">
+              <img src="${getAssetSrc(p.assetKey, p.fallback)}" alt="${p.name}" class="card-img-wrap w-full h-full object-cover" />
+              ${p.badge ? `<span class="absolute top-3 left-3 px-2.5 py-0.5 rounded-full bg-alpine-charcoal text-white font-mono text-[9px] font-bold tracking-wider">${p.badge}</span>` : ''}
+              <button onclick="toggleWishlist('${p.id}')" class="absolute top-3 right-3 w-8 h-8 rounded-full bg-white/85 backdrop-blur-sm flex items-center justify-center text-xs transition hover:scale-110 ${liked ? 'text-rose-500' : 'text-alpine-charcoal'}" aria-label="Wishlist">
+                ${liked ? '♥' : '♡'}
+              </button>
+
+              <!-- Hover Size & Quick Add Overlay -->
+              <div class="hover-panel absolute inset-x-2.5 bottom-2.5 p-3 rounded-2xl bg-white/90 backdrop-blur-md shadow-xl border border-white">
+                <div class="flex items-center justify-between gap-1 mb-2">
+                  ${['S','M','L','XL'].map(sz => `
+                    <button onclick="addProductById('${p.id}', '${sz}', this)" class="flex-1 py-1 rounded-lg text-[10px] font-bold bg-slate-100 hover:bg-alpine-charcoal hover:text-white transition">${sz}</button>
+                  `).join('')}
+                </div>
+                <button onclick="addProductById('${p.id}', 'M', this)" class="w-full py-2 rounded-xl bg-alpine-charcoal text-white text-[11px] font-semibold hover:bg-alpine-deep transition">
+                  Add to cart · $${p.price.toLocaleString()}
+                </button>
+              </div>
+            </div>
+
+            <div class="p-3.5 flex-1 flex flex-col justify-between">
+              <div class="flex items-start justify-between gap-2">
+                <div>
+                  <div class="font-display text-lg tracking-wide text-alpine-charcoal leading-tight">${p.name}</div>
+                  <div class="text-[11px] text-slate-500">${p.desc}</div>
+                </div>
+                <div class="font-mono text-xs font-bold text-alpine-charcoal">$${p.price.toLocaleString()}</div>
+              </div>
+              <div class="flex items-center gap-1.5 mt-3">
+                ${p.swatches.map(sw => `<span class="w-3 h-3 rounded-full border border-slate-300" style="background:${sw}"></span>`).join('')}
+              </div>
+            </div>
+          </div>`;
+      }).join('');
+    }
+
+    function renderColdOps() {
+      const track = document.getElementById('cold-ops-track');
+      track.innerHTML = COLD_OPS_GEAR.map(g => `
+        <div class="gear-card group relative min-w-[260px] sm:min-w-[295px] rounded-[1.75rem] bg-[#1a2633] border border-white/10 overflow-hidden flex-shrink-0 flex flex-col">
+          <div class="relative aspect-square overflow-hidden bg-[#131d27]">
+            <img src="${getAssetSrc(g.assetKey, g.fallback)}" alt="${g.name}" draggable="false" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+            <div class="gear-overlay absolute inset-x-3 bottom-3 p-3 rounded-2xl glass-dark">
+              <div class="flex items-center gap-1.5 mb-2">
+                ${g.sizes.map(sz => `
+                  <button onclick="addProductById('${g.id}', '${sz}', this)" class="flex-1 py-1 rounded-lg bg-white/15 hover:bg-white hover:text-alpine-charcoal text-[10px] font-mono font-semibold transition">${sz}</button>
+                `).join('')}
+              </div>
+              <button onclick="addProductById('${g.id}', '${g.sizes[0]}', this)" class="w-full py-2 rounded-xl bg-white text-alpine-charcoal text-xs font-semibold hover:bg-sky-100 transition">
+                Add to bag · $${g.price}
+              </button>
+            </div>
+          </div>
+          <div class="p-4 flex items-center justify-between">
+            <div>
+              <div class="font-display text-xl tracking-wide">${g.name}</div>
+              <div class="text-[11px] text-white/55">${g.desc}</div>
+            </div>
+            <div class="font-mono text-sm font-bold text-sky-200">$${g.price}</div>
+          </div>
+        </div>
+      `).join('');
+
+      document.getElementById('upsell-goggle-img').src = getAssetSrc(COLD_OPS_GEAR[0].assetKey, COLD_OPS_GEAR[0].fallback);
+      document.getElementById('upsell-beanie-img').src = getAssetSrc(COLD_OPS_GEAR[4].assetKey, COLD_OPS_GEAR[4].fallback);
+    }
+
+    const LOOKBOOK_FRAMES = [
+      { key: 'hero_arctic01', fallback: HERO_COLOURWAYS[0].fallback, caption: '01 / ARCTIC 01 — 3,842M AIGUILLE DU MIDI' },
+      { key: 'portrait_few', fallback: SCENE_ASSETS.portrait_few.fallback, caption: '02 / FOR THE FEW — RIDGE TRAVERSE' },
+      { key: 'hero_stealth', fallback: HERO_COLOURWAYS[2].fallback, caption: '03 / STEALTH — NIGHT DESCENT' },
+      { key: 'hero_aurora', fallback: HERO_COLOURWAYS[1].fallback, caption: '04 / AURORA — GLACIER LIGHT' },
+      { key: 'mountain_peaks', fallback: SCENE_ASSETS.mountain_peaks.fallback, caption: '05 / CHAMONIX MASSIF — -22°C' },
+      { key: 'hero_polar', fallback: HERO_COLOURWAYS[3].fallback, caption: '06 / POLAR GOOSE — WHITE OUT' },
+      { key: 'floating_jacket', fallback: SCENE_ASSETS.floating_jacket.fallback, caption: '07 / 800FP CHAMBER ARCHITECTURE' },
+      { key: 'gear_goggle', fallback: COLD_OPS_GEAR[0].fallback, caption: '08 / ZENITH MIRRORED OPTICS' },
+      { key: 'drop05_camp', fallback: SCENE_ASSETS.drop05_camp.fallback, caption: '09 / BASE CAMP — DROP 05 PREVIEW' }
+    ];
+
+    function renderLookbookAndScenes() {
+      document.getElementById('proof-img-0').src = getAssetSrc('mountain_peaks', SCENE_ASSETS.mountain_peaks.fallback);
+      document.getElementById('proof-img-1').src = getAssetSrc('hero_aurora', HERO_COLOURWAYS[1].fallback);
+      document.getElementById('proof-img-2').src = getAssetSrc('hero_stealth', HERO_COLOURWAYS[2].fallback);
+      document.getElementById('proof-img-3').src = getAssetSrc('drop05_camp', SCENE_ASSETS.drop05_camp.fallback);
+
+      document.getElementById('mountain-bg-img').src = getAssetSrc('mountain_peaks', SCENE_ASSETS.mountain_peaks.fallback);
+      document.getElementById('portrait-few-img').src = getAssetSrc('portrait_few', SCENE_ASSETS.portrait_few.fallback);
+      document.getElementById('floating-jacket-img').src = getAssetSrc('floating_jacket', SCENE_ASSETS.floating_jacket.fallback);
+      document.getElementById('drop05-bg-img').src = getAssetSrc('drop05_camp', SCENE_ASSETS.drop05_camp.fallback);
+
+      const grid = document.getElementById('lookbook-grid');
+      grid.innerHTML = LOOKBOOK_FRAMES.map((f, idx) => `
+        <button onclick="openLightbox(${idx})" class="relative aspect-square rounded-2xl overflow-hidden group border border-white/15 bg-alpine-deep">
+          <img src="${getAssetSrc(f.key, f.fallback)}" alt="${f.caption}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
+          <div class="absolute inset-0 bg-black/0 group-hover:bg-black/25 transition flex items-end p-2">
+            <span class="opacity-0 group-hover:opacity-100 font-mono text-[9px] text-white transition">0${idx + 1} ↗</span>
+          </div>
+        </button>
+      `).join('');
+    }
+
+    function refreshAllVisuals() {
+      renderHero();
+      renderCollectionGrid();
+      renderColdOps();
+      renderLookbookAndScenes();
+      renderCartUI();
+    }
+
+    // ===========================================================
+    // 6. CART, FLY-TO-BAG ANIMATION & 2-CLICK CHECKOUT
+    // ===========================================================
+    function findCatalogItem(id) {
+      return [...HERO_COLOURWAYS, ...COLLECTION_PRODUCTS, ...COLD_OPS_GEAR].find(x => x.id === id);
+    }
+
+    function flyToBag(sourceEl, imgSrc) {
+      const bagBtn = document.getElementById('nav-bag-btn');
+      if (!sourceEl || !bagBtn) return;
+      const start = sourceEl.getBoundingClientRect();
+      const end = bagBtn.getBoundingClientRect();
+
+      const flyer = document.createElement('img');
+      flyer.src = imgSrc;
+      flyer.className = 'fixed z-[99] w-14 h-14 rounded-2xl object-cover shadow-2xl border-2 border-white pointer-events-none';
+      flyer.style.left = `${start.left + start.width / 2 - 28}px`;
+      flyer.style.top = `${start.top + start.height / 2 - 28}px`;
+      flyer.style.transition = 'all 0.65s cubic-bezier(0.22, 1, 0.36, 1)';
+      document.body.appendChild(flyer);
+
+      requestAnimationFrame(() => {
+        flyer.style.left = `${end.left}px`;
+        flyer.style.top = `${end.top}px`;
+        flyer.style.width = '20px';
+        flyer.style.height = '20px';
+        flyer.style.opacity = '0.2';
+      });
+
+      setTimeout(() => {
+        flyer.remove();
+        const badge = document.getElementById('cart-badge');
+        badge.classList.add('scale-125');
+        setTimeout(() => badge.classList.remove('scale-125'), 250);
+      }, 680);
+    }
+
+    function addHeroToCart(btnEl) {
+      const item = HERO_COLOURWAYS[activeHeroIdx];
+      addProductById(item.id, selectedHeroSize, document.getElementById('hero-model-img') || btnEl, true);
+    }
+
+    function addProductById(id, size = 'M', btnEl = null, shouldOpenDrawer = true) {
+      const product = findCatalogItem(id);
+      if (!product) return;
+      const imgSrc = getAssetSrc(product.assetKey, product.fallback);
+
+      const existing = cart.find(c => c.id === id && c.size === size);
+      if (existing) {
+        existing.qty += 1;
+      } else {
+        cart.push({ id: product.id, name: product.name, price: product.price, size, qty: 1, assetKey: product.assetKey, fallback: product.fallback });
+      }
+
+      if (btnEl) flyToBag(btnEl, imgSrc);
+      renderCartUI();
+      showToast(`Added ${product.name} (${size}) to bag.`);
+      if (shouldOpenDrawer) {
+        setTimeout(openCartDrawer, 420);
+      }
+    }
+
+    function updateCartQty(idx, delta) {
+      if (!cart[idx]) return;
+      cart[idx].qty += delta;
+      if (cart[idx].qty <= 0) cart.splice(idx, 1);
+      renderCartUI();
+    }
+
+    function removeCartItem(idx) {
+      cart.splice(idx, 1);
+      renderCartUI();
+    }
+
+    function renderCartUI() {
+      const totalQty = cart.reduce((sum, i) => sum + i.qty, 0);
+      const subtotal = cart.reduce((sum, i) => sum + i.price * i.qty, 0);
+
+      document.getElementById('cart-badge').textContent = totalQty;
+      document.getElementById('cart-subtotal').textContent = `$${subtotal.toLocaleString('en-US', { minimumFractionDigits: 2 })}`;
+
+      const list = document.getElementById('cart-items-list');
+      if (cart.length === 0) {
+        list.innerHTML = `<div class="py-10 text-center text-xs text-slate-400 font-mono">Your alpine bag is currently empty.</div>`;
+      } else {
+        list.innerHTML = cart.map((item, idx) => `
+          <div class="flex gap-3.5 items-center">
+            <img src="${getAssetSrc(item.assetKey, item.fallback)}" alt="${item.name}" class="w-16 h-20 rounded-2xl object-cover bg-slate-100 shrink-0" />
+            <div class="flex-1 min-w-0">
+              <div class="flex items-start justify-between gap-2">
+                <div class="font-semibold text-sm truncate">${item.name}</div>
+                <div class="font-mono text-xs font-bold">$${(item.price * item.qty).toLocaleString()}.00</div>
+              </div>
+              <div class="text-[11px] text-slate-400 font-mono mb-2">Size: ${item.size}</div>
+              <div class="flex items-center justify-between">
+                <div class="inline-flex items-center gap-2 border border-slate-200 rounded-full px-2 py-0.5 text-xs">
+                  <button onclick="updateCartQty(${idx}, -1)" class="w-5 h-5 hover:text-alpine-mid">−</button>
+                  <span class="font-mono font-semibold">${item.qty}</span>
+                  <button onclick="updateCartQty(${idx}, 1)" class="w-5 h-5 hover:text-alpine-mid">+</button>
+                </div>
+                <button onclick="removeCartItem(${idx})" class="text-[11px] text-slate-400 hover:text-rose-500 underline">Remove</button>
+              </div>
+            </div>
+          </div>
+        `).join('');
+      }
+
+      // Sync Checkout Summary
+      document.getElementById('checkout-count').textContent = `${totalQty} item${totalQty === 1 ? '' : 's'}`;
+      document.getElementById('checkout-total').textContent = `$${subtotal.toLocaleString('en-US', { minimumFractionDigits: 2 })}`;
+      const previewItem = cart[0] || HERO_COLOURWAYS[0];
+      document.getElementById('checkout-preview-img').src = getAssetSrc(previewItem.assetKey, previewItem.fallback);
+      document.getElementById('checkout-items-list').innerHTML = cart.map(item => `
+        <div class="flex items-center justify-between text-xs bg-white/5 p-2.5 rounded-xl">
+          <div class="flex items-center gap-2.5">
+            <img src="${getAssetSrc(item.assetKey, item.fallback)}" class="w-10 h-12 rounded-lg object-cover" />
+            <div>
+              <div class="font-semibold">${item.name}</div>
+              <div class="font-mono text-[10px] text-white/60">Size ${item.size} · Qty ${item.qty}</div>
+            </div>
+          </div>
+          <span class="font-mono font-semibold">$${(item.price * item.qty).toLocaleString()}</span>
+        </div>
+      `).join('');
+    }
+
+    function openCartDrawer() {
+      document.getElementById('cart-backdrop').classList.remove('hidden');
+      document.getElementById('cart-drawer').classList.remove('translate-x-full');
+    }
+
+    function closeCartDrawer() {
+      document.getElementById('cart-backdrop').classList.add('hidden');
+      document.getElementById('cart-drawer').classList.add('translate-x-full');
+    }
+
+    function startCheckoutTransition() {
+      if (cart.length === 0) {
+        addProductById('arctic01', 'M', null, false);
+      }
+      closeCartDrawer();
+      const overlay = document.getElementById('checkout-transition');
+      overlay.classList.remove('hidden');
+      setTimeout(() => {
+        document.getElementById('storefront-view').classList.add('hidden');
+        document.getElementById('checkout-view').classList.remove('hidden');
+        window.scrollTo({ top: 0, behavior: 'instant' });
+        overlay.classList.add('hidden');
+      }, 850);
+    }
+
+    function exitCheckout() {
+      document.getElementById('checkout-view').classList.add('hidden');
+      document.getElementById('storefront-view').classList.remove('hidden');
+    }
+
+    function completeOrder(method) {
+      const subtotal = cart.reduce((s, i) => s + i.price * i.qty, 0);
+      document.getElementById('order-modal-msg').textContent =
+        `Paid $${subtotal.toLocaleString()}.00 via ${method}. Your LoveMelt expedition gear is being prepared at our Chamonix sub-zero dispatch.`;
+      document.getElementById('order-modal').classList.remove('hidden');
+      cart = [];
+      renderCartUI();
+    }
+
+    function closeOrderModal() {
+      document.getElementById('order-modal').classList.add('hidden');
+      exitCheckout();
+    }
+
+    // ===========================================================
+    // 7. SUMMIT LOG INTERACTIVE MOUNTAIN CLIMBER
+    // ===========================================================
+    function advanceClimb() {
+      if (climbStep < SUMMIT_REVIEWS.length) {
+        climbStep++;
+      } else {
+        climbStep = 1;
+      }
+      renderSummitClimber();
+    }
+
+    function renderSummitClimber() {
+      const path = document.getElementById('ridge-path-active');
+      const progress = climbStep / SUMMIT_REVIEWS.length;
+      path.style.strokeDashoffset = Math.round(720 * (1 - progress));
+
+      document.getElementById('climb-step-label').textContent = `${climbStep} / ${SUMMIT_REVIEWS.length}`;
+
+      const flagsContainer = document.getElementById('ridge-flags-container');
+      flagsContainer.innerHTML = SUMMIT_REVIEWS.slice(0, climbStep).map(r => `
+        <div class="absolute -translate-x-1/2 -translate-y-full transition-all duration-500" style="left:${r.x}%; top:${r.y}%;">
+          <div class="px-2 py-0.5 rounded-full bg-white text-alpine-charcoal font-mono text-[9px] font-bold shadow-lg whitespace-nowrap mb-1">⚑ ${r.alt}</div>
+          <div class="w-0.5 h-5 bg-sky-200 mx-auto"></div>
+        </div>
+      `).join('');
+
+      if (climbStep > 0) {
+        const current = SUMMIT_REVIEWS[climbStep - 1];
+        document.getElementById('summit-rating-num').textContent = current.rating.toFixed(1);
+        document.getElementById('summit-stars').textContent = current.rating >= 4.7 ? '★★★★★' : '★★★★☆';
+        document.getElementById('summit-report-count').textContent = `${climbStep * 248} verified reports up to ${current.alt}`;
+        document.getElementById('ridge-alt-readout').textContent = `PLANTED · ${current.alt}`;
+
+        const reviewsList = document.getElementById('summit-reviews-list');
+        reviewsList.innerHTML = SUMMIT_REVIEWS.slice(0, climbStep).reverse().slice(0, 3).map(r => `
+          <div class="p-4 rounded-2xl bg-white/[0.06] border border-white/10 space-y-1.5">
+            <div class="flex items-center justify-between font-mono text-[10px]">
+              <span class="text-sky-200 font-semibold">${r.author} · ${r.location}</span>
+              <span class="px-2 py-0.5 rounded-full bg-white/10 text-white">${r.alt}</span>
+            </div>
+            <p class="text-xs text-white/85 leading-relaxed">"${r.text}"</p>
+            <div class="font-mono text-[10px] text-white/45">Gear: ${r.product}</div>
+          </div>
+        `).join('');
+      }
+    }
+
+    // ===========================================================
+    // 8. SCROLL EFFECTS: NAV GLASS, ALTITUDE HUD, KINETIC TYPE, COUNTERS
+    // ===========================================================
+    function handleScroll() {
+      const scrollY = window.scrollY;
+      const docHeight = Math.max(1, document.documentElement.scrollHeight - window.innerHeight);
+      const pct = Math.min(1, Math.max(0, scrollY / docHeight));
+
+      // Nav glass effect
+      const nav = document.getElementById('main-nav');
+      if (scrollY > 40) nav.classList.add('glass-nav');
+      else nav.classList.remove('glass-nav');
+
+      // Altitude HUD (2,400M -> 8,848M)
+      const alt = Math.round(2400 + pct * (8848 - 2400));
+      const temp = Math.round(-12 - pct * 28);
+      let camp = 'Base Camp';
+      if (alt >= 8400) camp = 'Summit';
+      else if (alt >= 6800) camp = 'Camp 3';
+      else if (alt >= 5200) camp = 'Camp 2';
+      else if (alt >= 3600) camp = 'Camp 1';
+
+      document.getElementById('hud-camp').textContent = camp;
+      document.getElementById('hud-alt').textContent = `${alt.toLocaleString()}M`;
+      document.getElementById('hud-temp').textContent = `${temp}°C`;
+      document.getElementById('hud-bar').style.width = `${Math.max(6, Math.round(pct * 100))}%`;
+
+      // Kinetic Weather Horizontal Shift
+      const weatherSec = document.getElementById('kinetic-weather');
+      if (weatherSec) {
+        const rect = weatherSec.getBoundingClientRect();
+        const offset = (window.innerHeight - rect.top) * 0.06;
+        const l1 = document.getElementById('kinetic-line-1');
+        const l2 = document.getElementById('kinetic-line-2');
+        const l3 = document.getElementById('kinetic-line-3');
+        if (l1 && l2 && l3) {
+          l1.style.transform = `translateX(${Math.min(40, offset - 20)}px)`;
+          l2.style.transform = `translateX(${Math.max(-40, 20 - offset)}px)`;
+          l3.style.transform = `translateX(${Math.min(35, offset * 0.7 - 15)}px)`;
+        }
+        const kl = l1 ? l1.parentElement : null;
+        if (kl) {
+          const p = Math.min(1, Math.max(0, (window.innerHeight - rect.top) / (window.innerHeight + rect.height)));
+          kl.style.transformOrigin = 'left bottom';
+          kl.style.transform = `scale(${0.62 + p * 0.38}) translateY(${(1 - p) * 36}px)`;
+        }
+      }
+    }
+
+    // Proof Card Number Count-Up Observer
+    function initProofObserver() {
+      const counters = document.querySelectorAll('.proof-counter');
+      const obs = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (!entry.isIntersecting || entry.target.dataset.animated) return;
+          entry.target.dataset.animated = '1';
+          const target = parseInt(entry.target.dataset.target, 10);
+          const suffix = entry.target.dataset.suffix || '';
+          const duration = 2000;
+          const start = performance.now();
+
+          function tick(now) {
+            const p = Math.min(1, (now - start) / duration);
+            const eased = 1 - Math.pow(1 - p, 3);
+            const val = Math.round(target * eased);
+            entry.target.textContent = `${val}${suffix}`;
+            if (p < 1) requestAnimationFrame(tick);
+          }
+          requestAnimationFrame(tick);
+        });
+      }, { threshold: 0.35 });
+      counters.forEach(c => obs.observe(c));
+    }
+
+    // ===========================================================
+    // 9. DRAG-TO-SCROLL WITH MOMENTUM (COLD OPS CAROUSEL)
+    // ===========================================================
+    function initDragCarousel() {
+      const slider = document.getElementById('cold-ops-track');
+      let isDown = false, startX = 0, scrollLeft = 0, velX = 0, momentumID;
+
+      function beginMomentum() {
+        cancelAnimationFrame(momentumID);
+        function step() {
+          slider.scrollLeft += velX;
+          velX *= 0.94;
+          if (Math.abs(velX) > 0.5) momentumID = requestAnimationFrame(step);
+        }
+        momentumID = requestAnimationFrame(step);
+      }
+
+      slider.addEventListener('mousedown', e => {
+        isDown = true;
+        startX = e.pageX - slider.offsetLeft;
+        scrollLeft = slider.scrollLeft;
+        velX = 0;
+        cancelAnimationFrame(momentumID);
+      });
+      window.addEventListener('mouseup', () => {
+        if (!isDown) return;
+        isDown = false;
+        beginMomentum();
+      });
+      slider.addEventListener('mousemove', e => {
+        if (!isDown) return;
+        e.preventDefault();
+        const x = e.pageX - slider.offsetLeft;
+        const walk = (x - startX) * 1.4;
+        const prev = slider.scrollLeft;
+        slider.scrollLeft = scrollLeft - walk;
+        velX = slider.scrollLeft - prev;
+      });
+    }
+
+    // ===========================================================
+    // 10. MULTI-LAYERED HTML5 CANVAS SNOW ENGINE
+    // ===========================================================
+    function initSnowCanvases() {
+      const canvases = Array.from(document.querySelectorAll('.snow-canvas'));
+      const instances = canvases.map(canvas => {
+        const ctx = canvas.getContext('2d');
+        const flakes = [];
+        function resize() {
+          canvas.width = canvas.offsetWidth || window.innerWidth;
+          canvas.height = canvas.offsetHeight || 600;
+        }
+        resize();
+        const count = window.innerWidth < 640 ? 45 : 85;
+        for (let i = 0; i < count; i++) {
+          flakes.push({
+            x: Math.random() * canvas.width,
+            y: Math.random() * canvas.height,
+            r: Math.random() * 2.6 + 0.8,
+            vy: Math.random() * 1.1 + 0.35,
+            vx: Math.random() * 0.6 - 0.15,
+            alpha: Math.random() * 0.55 + 0.25,
+            phase: Math.random() * Math.PI * 2
+          });
+        }
+        return { canvas, ctx, flakes, resize };
+      });
+
+      let mouseWind = 0;
+      window.addEventListener('mousemove', e => {
+        mouseWind = ((e.clientX / window.innerWidth) - 0.5) * 0.9;
+      });
+      window.addEventListener('resize', () => instances.forEach(i => i.resize()));
+
+      function animate() {
+        for (const inst of instances) {
+          const { canvas, ctx, flakes } = inst;
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+          for (const f of flakes) {
+            f.phase += 0.015;
+            f.y += f.vy;
+            f.x += f.vx + Math.sin(f.phase) * 0.35 + mouseWind;
+            if (f.y > canvas.height + 5) { f.y = -5; f.x = Math.random() * canvas.width; }
+            if (f.x > canvas.width + 5) f.x = -5;
+            if (f.x < -5) f.x = canvas.width + 5;
+            ctx.beginPath();
+            ctx.arc(f.x, f.y, f.r, 0, Math.PI * 2);
+            ctx.fillStyle = `rgba(255,255,255,${f.alpha})`;
+            ctx.fill();
+          }
+        }
+        requestAnimationFrame(animate);
+      }
+      animate();
+    }
+
+    // ===========================================================
+    // 11. LIVE COUNTDOWN, MODALS, WISHLIST & TOASTS
+    // ===========================================================
+    function initCountdown() {
+      let totalSeconds = 39 * 86400 + 39 * 60 + 33;
+      setInterval(() => {
+        totalSeconds = Math.max(0, totalSeconds - 1);
+        const d = Math.floor(totalSeconds / 86400);
+        const h = Math.floor((totalSeconds % 86400) / 3600);
+        const m = Math.floor((totalSeconds % 3600) / 60);
+        const s = totalSeconds % 60;
+        document.getElementById('cd-days').textContent = String(d).padStart(2, '0');
+        document.getElementById('cd-hours').textContent = String(h).padStart(2, '0');
+        document.getElementById('cd-mins').textContent = String(m).padStart(2, '0');
+        document.getElementById('cd-secs').textContent = String(s).padStart(2, '0');
+      }, 1000);
+    }
+
+    function toggleWishlist(id) {
+      if (wishlist.has(id)) wishlist.delete(id);
+      else wishlist.add(id);
+      const badge = document.getElementById('wishlist-badge');
+      badge.textContent = wishlist.size;
+      badge.classList.toggle('hidden', wishlist.size === 0);
+      renderCollectionGrid();
+    }
+
+    function openLightbox(idx) {
+      currentLightboxIdx = idx;
+      const frame = LOOKBOOK_FRAMES[idx];
+      document.getElementById('lightbox-img').src = getAssetSrc(frame.key, frame.fallback);
+      document.getElementById('lightbox-caption').textContent = frame.caption;
+      document.getElementById('lightbox-modal').classList.remove('hidden');
+    }
+
+    function stepLightbox(dir) {
+      currentLightboxIdx = (currentLightboxIdx + dir + LOOKBOOK_FRAMES.length) % LOOKBOOK_FRAMES.length;
+      openLightbox(currentLightboxIdx);
+    }
+
+    function closeLightbox() {
+      document.getElementById('lightbox-modal').classList.add('hidden');
+    }
+
+    function openSearchModal() {
+      document.getElementById('search-modal').classList.remove('hidden');
+      document.getElementById('search-input').focus();
+      renderSearchResults('');
+    }
+
+    function closeSearchModal() {
+      document.getElementById('search-modal').classList.add('hidden');
+    }
+
+    function renderSearchResults(q) {
+      const term = q.trim().toLowerCase();
+      const all = [...COLLECTION_PRODUCTS, ...COLD_OPS_GEAR];
+      const matches = all.filter(i => i.name.toLowerCase().includes(term) || i.desc.toLowerCase().includes(term));
+      document.getElementById('search-results').innerHTML = matches.map(m => `
+        <div class="flex items-center justify-between p-2.5 rounded-xl bg-white/5 hover:bg-white/10 transition">
+          <div class="flex items-center gap-3">
+            <img src="${getAssetSrc(m.assetKey, m.fallback)}" class="w-10 h-10 rounded-lg object-cover" />
+            <div>
+              <div class="text-xs font-semibold">${m.name}</div>
+              <div class="text-[10px] text-white/55">${m.desc}</div>
+            </div>
+          </div>
+          <button onclick="addProductById('${m.id}', 'M'); closeSearchModal();" class="px-3 py-1 rounded-full bg-white text-alpine-charcoal text-[11px] font-semibold">+$${m.price}</button>
+        </div>
+      `).join('');
+    }
+
+    function handleWaitlist(e, listName) {
+      e.preventDefault();
+      e.target.reset();
+      showToast(`You're on the ${listName}.`);
+    }
+
+    function toggleMobileMenu() {
+      document.getElementById('mobile-menu').classList.toggle('hidden');
+    }
+
+    function showToast(msg) {
+      const box = document.getElementById('toast-box');
+      const el = document.createElement('div');
+      el.className = 'glass-dark text-white text-xs font-medium px-4 py-2.5 rounded-full shadow-2xl border border-white/15 transition-all';
+      el.textContent = msg;
+      box.appendChild(el);
+      setTimeout(() => { el.style.opacity = '0'; setTimeout(() => el.remove(), 300); }, 2800);
+    }
+
+    // ===========================================================
+    // 12. PRELOADER & BOOTSTRAP ON WINDOW LOAD
+    // ===========================================================
+    window.onload = function () {
+      // Hero size pill binding
+      document.querySelectorAll('.hero-size-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          selectedHeroSize = btn.dataset.size;
+          document.querySelectorAll('.hero-size-btn').forEach(b => {
+            b.className = 'hero-size-btn w-9 h-9 rounded-full text-xs font-semibold transition border border-white/25 bg-white/10 text-white hover:bg-white/25';
+          });
+          btn.className = 'hero-size-btn w-9 h-9 rounded-full text-xs font-semibold transition border border-white bg-white text-alpine-charcoal shadow';
+        });
+      });
+
+      document.getElementById('mobile-menu-btn').addEventListener('click', toggleMobileMenu);
+
+      // Initial render with crisp SVG fallbacks
+      refreshAllVisuals();
+      updateNBStatusUI();
+      initProofObserver();
+      initDragCarousel();
+      initSnowCanvases();
+      initCountdown();
+      initReelMotion();
+      initReveals();
+      window.addEventListener('scroll', handleScroll, { passive: true });
+      handleScroll();
+
+      // Preloader Altitude Animation (0 -> 8809M over ~1.5s)
+      const preloader = document.getElementById('preloader');
+      const altEl = document.getElementById('preloader-alt');
+      const barEl = document.getElementById('preloader-bar');
+      const start = performance.now();
+      const duration = 1150;
+
+      function runPreloader(now) {
+        const p = Math.min(1, (now - start) / duration);
+        const eased = 1 - Math.pow(1 - p, 3);
+        altEl.textContent = String(Math.round(eased * 8848)).padStart(4, '0');
+        barEl.style.width = `${Math.round(eased * 100)}%`;
+        if (p < 1) {
+          requestAnimationFrame(runPreloader);
+        } else {
+          setTimeout(() => {
+            preloader.classList.add('preloader-done');
+            preloader.style.pointerEvents = 'none';
+            setTimeout(() => preloader.remove(), 850);
+          }, 180);
+        }
+      }
+      requestAnimationFrame(runPreloader);
+
+      // Reel-match v2: a reveal system for every section + the footer wordmark climb
+    function initReveals() {
+      const ioS = new IntersectionObserver(es => {
+        es.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); ioS.unobserve(e.target); } });
+      }, { threshold: 0.2 });
+      const ioG = new IntersectionObserver(es => {
+        es.forEach(e => {
+          if (!e.isIntersecting) return;
+          [...e.target.children].forEach((c, i) => { c.style.transitionDelay = (i * 70) + 'ms'; });
+          void e.target.offsetWidth;
+          e.target.classList.add('in');
+          ioG.unobserve(e.target);
+        });
+      }, { threshold: 0.05 });
+      document.querySelectorAll('#collection h2, #story h2, #cold-ops h2, #lookbook h2, #summit-log h2, #drop-countdown h2, #story [class*="col-span-7"], #story [class*="col-span-5"]').forEach(el => { el.classList.add('rv'); ioS.observe(el); });
+      document.querySelectorAll('.rv-group').forEach(g => ioG.observe(g));
+      const fw = document.querySelector('footer .select-none');
+      if (fw) { fw.classList.add('footer-word'); ioS.observe(fw); }
+      const climbers = document.querySelector('footer svg[viewBox="0 0 1200 100"]');
+      if (climbers) climbers.style.animation = 'climberBob 3.4s ease-in-out infinite';
+    }
+
+    // Reel-match entrances: floating jacket fly-in + pin stagger, Summit Log auto-climb
+    function initReelMotion() {
+      const sec = document.getElementById('floating-specs');
+      if (sec) {
+        sec.classList.add('specs-armed');
+        const o = new IntersectionObserver(es => {
+          es.forEach(e => {
+            if (!e.isIntersecting) return;
+            sec.classList.add('specs-in');
+            sec.querySelectorAll('.spec-pin').forEach((pin, i) => setTimeout(() => pin.classList.add('pin-in'), 680 + i * 150));
+            o.disconnect();
+          });
+        }, { threshold: 0.3 });
+        o.observe(sec);
+      }
+      const sl = document.getElementById('summit-log');
+      if (sl) {
+        const o2 = new IntersectionObserver(es => {
+          es.forEach(e => {
+            if (!e.isIntersecting) return;
+            o2.disconnect();
+            const rEl = document.getElementById('summit-rating-num');
+            if (rEl) {
+              const target = SUMMIT_REVIEWS[SUMMIT_REVIEWS.length - 1].rating;
+              const t0 = performance.now();
+              const dur = 480 * SUMMIT_REVIEWS.length;
+              const tick = (t) => { const p = Math.min(1, (t - t0) / dur); const e = 1 - Math.pow(1 - p, 3); rEl.textContent = (target * e).toFixed(1); if (p < 1) requestAnimationFrame(tick); };
+              requestAnimationFrame(tick);
+            }
+            const iv = setInterval(() => {
+              if (climbStep >= SUMMIT_REVIEWS.length) { clearInterval(iv); return; }
+              advanceClimb();
+              if (climbStep >= SUMMIT_REVIEWS.length) clearInterval(iv);
+            }, 480);
+          });
+        }, { threshold: 0.35 });
+        o2.observe(sl);
+      }
+    }
+
+    // Automatically trigger Nano Banana photorealistic generation for any uncached hero/product assets
+      const missingCount = NB_MANIFEST.filter(m => !generatedImages[m.key]).length;
+      if (missingCount > 0) {
+        setTimeout(() => generateAllNanoBanana(false), 1200);
+      }
+    };
+  </script>
+</body>
+</html>
