@@ -75,14 +75,9 @@
     }
     #hero-model-wrap {
       animation: heroModelIn 1.15s cubic-bezier(0.22, 1, 0.36, 1) 1.72s both;
-      perspective: 1100px;
     }
-    #hero-model-img { transform-style: preserve-3d; backface-visibility: hidden; }
     /* Smooth colourway crossfade: two stacked figures + two bg layers, never an empty frame */
-    #hero-model-wrap img {
-      transition: opacity 0.7s cubic-bezier(0.22, 1, 0.36, 1), transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
-      will-change: opacity, transform;
-    }
+    #hero-model-wrap img { will-change: opacity, transform; }
     .hero-bg-layer { position: absolute; inset: 0; z-index: 0; pointer-events: none; transition: opacity 0.7s cubic-bezier(0.22, 1, 0.36, 1); }
     @keyframes heroRise {
       0% { opacity: 0; transform: translateY(20px); }
@@ -1115,24 +1110,31 @@
       swapHeroVisuals();
     }
 
-    let heroTurning = false;
     function swapHeroVisuals() {
       const item = HERO_COLOURWAYS[activeHeroIdx];
-      const img = document.getElementById('hero-model-img');
-      document.getElementById('hero-model-img-b').style.opacity = '0';
-      if (heroTurning) {
-        img.src = HERO_CUTOUTS[activeHeroIdx] || getAssetSrc(item.assetKey, item.fallback);
-      } else {
-        heroTurning = true;
-        img.style.transition = 'transform 0.3s cubic-bezier(0.55, 0, 1, 0.45)';
-        img.style.transform = 'rotateY(86deg) scale(0.97)';
-        setTimeout(() => {
-          img.src = HERO_CUTOUTS[activeHeroIdx] || getAssetSrc(item.assetKey, item.fallback);
-          img.style.transition = 'transform 0.42s cubic-bezier(0.22, 1, 0.36, 1)';
-          img.style.transform = 'rotateY(0deg) scale(1)';
-          setTimeout(() => { heroTurning = false; }, 430);
-        }, 310);
-      }
+      const front = document.getElementById(heroFrontId);
+      const backId = heroFrontId === 'hero-model-img' ? 'hero-model-img-b' : 'hero-model-img';
+      const back = document.getElementById(backId);
+      back.src = HERO_CUTOUTS[activeHeroIdx] || getAssetSrc(item.assetKey, item.fallback);
+
+      // Jackets ride a circular path: the current one arcs out to the left,
+      // the next one arcs in from the right, like a revolving ring.
+      const ease = 'cubic-bezier(0.45, 0, 0.25, 1)';
+      front.getAnimations().forEach(a => a.cancel());
+      back.getAnimations().forEach(a => a.cancel());
+      back.style.zIndex = '2';
+      front.style.zIndex = '1';
+      front.animate([
+        { transform: 'translate(0%, 0%) scale(1)', opacity: 1 },
+        { transform: 'translate(-48%, 7%) scale(0.92)', opacity: 1, offset: 0.55 },
+        { transform: 'translate(-108%, 2%) scale(0.85)', opacity: 0 }
+      ], { duration: 720, easing: ease, fill: 'forwards' });
+      back.animate([
+        { transform: 'translate(108%, 2%) scale(0.85)', opacity: 0 },
+        { transform: 'translate(48%, 7%) scale(0.92)', opacity: 1, offset: 0.45 },
+        { transform: 'translate(0%, 0%) scale(1)', opacity: 1 }
+      ], { duration: 720, easing: ease, fill: 'forwards' });
+      heroFrontId = backId;
 
       const bgA = document.getElementById('hero-bg-a');
       const bgB = document.getElementById('hero-bg-b');
@@ -1275,7 +1277,7 @@
 
     function addHeroToCart(btnEl) {
       const item = HERO_COLOURWAYS[activeHeroIdx];
-      addProductById(item.id, selectedHeroSize, document.getElementById('hero-model-img') || btnEl, true);
+      addProductById(item.id, selectedHeroSize, document.getElementById(heroFrontId) || btnEl, true);
     }
 
     function addProductById(id, size = 'M', btnEl = null, shouldOpenDrawer = true) {
