@@ -296,8 +296,6 @@
       <nav class="hidden md:flex items-center gap-7 text-xs font-medium tracking-wide text-white/90">
         <a href="#collection" class="hover:text-white transition">Shop</a>
         <a href="#hero" class="hover:text-white transition">Puffers</a>
-        <a href="#kinetic-weather" class="hover:text-white transition">Weather</a>
-        <a href="#cold-ops" class="hover:text-white transition">Cold Ops</a>
       </nav>
 
       <!-- Mobile Menu Button -->
@@ -312,7 +310,6 @@
 
       <!-- Right Controls -->
       <div class="flex items-center gap-2 sm:gap-2.5">
-        <a href="#cold-ops" class="hidden sm:inline-block text-xs font-medium text-white/85 hover:text-white mr-2 transition">Gear</a>
         <button onclick="openSearchModal()" class="w-9 h-9 rounded-full glass-pill text-white flex items-center justify-center hover:bg-white/25 transition" aria-label="Search">
           <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
         </button>
@@ -334,8 +331,6 @@
     <div id="mobile-menu" class="hidden md:hidden mt-3 p-4 rounded-2xl glass-dark text-white flex flex-col gap-3 text-sm font-medium">
       <a href="#collection" onclick="toggleMobileMenu()" class="py-1.5 border-b border-white/10">Shop Collection</a>
       <a href="#hero" onclick="toggleMobileMenu()" class="py-1.5 border-b border-white/10">Puffers</a>
-      <a href="#cold-ops" onclick="toggleMobileMenu()" class="py-1.5 border-b border-white/10">Cold Ops Gear</a>
-      <a href="#kinetic-weather" onclick="toggleMobileMenu()" class="py-1.5 border-b border-white/10">Mountain Weather</a>
     </div>
   </header>
 
@@ -534,57 +529,7 @@
     <!-- =======================================================
          6. KINETIC WEATHER TYPOGRAPHY (00:14 - 00:16)
     ======================================================== -->
-    <section id="kinetic-weather" class="relative overflow-hidden bg-[#2b4156] text-white">
-      <!-- Part A: Snow-Capped Mountain Range with Scroll-Reactive Type -->
-      <div class="relative min-h-[85vh] flex flex-col justify-between py-20 px-4 sm:px-10 overflow-hidden">
-        <img id="mountain-bg-img" alt="Alpine Peaks" class="absolute inset-0 w-full h-full object-cover opacity-80 scale-105" />
-        <div class="absolute inset-0 bg-gradient-to-b from-[#2b4156]/65 via-transparent to-[#2b4156]"></div>
-
-        <!-- Wind Streaks -->
-        <div class="absolute inset-0 pointer-events-none overflow-hidden">
-          <div class="wind-streak absolute top-[22%] left-0 w-96 h-[2px] bg-gradient-to-r from-transparent via-white/60 to-transparent"></div>
-          <div class="wind-streak absolute top-[54%] left-0 w-[520px] h-[3px] bg-gradient-to-r from-transparent via-sky-100/50 to-transparent" style="animation-delay: 2.1s;"></div>
-          <div class="wind-streak absolute top-[76%] left-0 w-80 h-[2px] bg-gradient-to-r from-transparent via-white/50 to-transparent" style="animation-delay: 4s;"></div>
-        </div>
-
-        <canvas id="snow-canvas-weather" class="snow-canvas absolute inset-0 w-full h-full pointer-events-none z-10"></canvas>
-
-        <div class="relative z-20 max-w-[1400px] w-full mx-auto flex flex-col sm:flex-row justify-between gap-4 font-mono text-[11px] text-white/75">
-          <p class="max-w-xs">LoveMelt was born at 4,200 m. Not as a trend, not as a season — as a shield.</p>
-          <p class="max-w-xs sm:text-right">Zero compromises on down density, seam sealing, or thermal retention.</p>
-        </div>
-
-        <div class="relative z-20 max-w-[1400px] w-full mx-auto mt-auto pt-24 space-y-1 select-none">
-          <div id="kinetic-line-1" class="font-display-tight text-5xl sm:text-7xl lg:text-[96px] text-white drop-shadow-md transition-transform duration-100 will-change-transform">
-            BUILT FOR COLD
-          </div>
-          <div id="kinetic-line-2" class="font-display-tight text-5xl sm:text-7xl lg:text-[96px] text-sky-100/90 drop-shadow-md transition-transform duration-100 will-change-transform">
-            MADE FOR HEIGHT
-          </div>
-          <div id="kinetic-line-3" class="font-display-tight text-5xl sm:text-7xl lg:text-[96px] text-white drop-shadow-md transition-transform duration-100 will-change-transform">
-            FORGED TO LAST
-          </div>
-        </div>
-      </div>
-
-      <!-- Part B: Dramatic Alpine Portrait ("NOT FOR MANY / FOR THE FEW") -->
-      <div class="relative min-h-[78vh] flex items-center justify-center py-20 px-4 sm:px-10 bg-gradient-to-b from-[#2b4156] via-[#4a647c] to-[#5d7a94] overflow-hidden">
-        <div class="max-w-[1400px] w-full mx-auto relative">
-          <!-- Top Split Headline -->
-          <div class="flex items-center justify-between font-display-tight text-3xl sm:text-5xl lg:text-7xl tracking-wide mb-4 relative z-20">
-            <span id="split-left" class="transition-transform duration-150">NOT FOR MANY</span>
-            <span id="split-right" class="text-sky-100/90 transition-transform duration-150">FOR THE FEW</span>
-          </div>
-
-          <!-- Wide Portrait Frame -->
-          <div class="relative w-full h-[52vh] sm:h-[62vh] rounded-[2rem] overflow-hidden shadow-2xl border border-white/20">
-            <img id="portrait-few-img" alt="Alpine Explorer Portrait" class="w-full h-full object-cover object-center" />
-            <div class="absolute inset-0 bg-gradient-to-t from-[#344d64]/70 via-transparent to-transparent"></div>
-            <div class="absolute bottom-5 right-6 font-mono text-xs text-white/80">Tested at -42°C · Mont Blanc Massif</div>
-          </div>
-        </div>
-      </div>
-    </section>
+    
 
     <!-- =======================================================
          7. FLOATING JACKET & PINNED SPECS (00:17 - 00:18)
@@ -594,29 +539,7 @@
     <!-- =======================================================
          8. COLD OPS INVENTORY (Grab-and-Throw Carousel)
     ======================================================== -->
-    <section id="cold-ops" class="bg-[#121b24] text-white py-24 px-4 sm:px-8 lg:px-12 overflow-hidden">
-      <div class="max-w-[1400px] mx-auto">
-        <div class="flex flex-wrap items-end justify-between gap-6 mb-10">
-          <div>
-            <p class="font-mono text-xs uppercase tracking-widest text-sky-300/75 mb-2">Drag &amp; Throw · Expedition Accessories</p>
-            <h2 class="font-display-tight text-5xl sm:text-6xl lg:text-7xl">COLD OPS<br />INVENTORY</h2>
-          </div>
-          <div class="max-w-xs text-left sm:text-right">
-            <p class="text-xs text-white/65 leading-relaxed mb-4">
-              Goggles, mitts, beanies and boots. Everything that keeps the edges warm, in the same cold lab as the jackets.
-            </p>
-            <button onclick="showToast('All 6 Cold Ops essentials ready to ship')" class="px-5 py-2 rounded-full bg-white text-alpine-charcoal text-xs font-semibold hover:bg-sky-100 transition">
-              Shop all
-            </button>
-          </div>
-        </div>
-
-        <!-- Draggable Horizontal Carousel -->
-        <div id="cold-ops-track" class="rv-group flex gap-5 overflow-x-auto no-scrollbar cursor-grab active:cursor-grabbing select-none pb-4">
-          <!-- Populated by JS -->
-        </div>
-      </div>
-    </section>
+    
 
     <!-- =======================================================
          9. FW25 LOOKBOOK ("SHOT ABOVE THE CLOUD LINE")
@@ -1328,16 +1251,9 @@
       { key: 'drop05_camp', fallback: SCENE_ASSETS.drop05_camp.fallback, caption: '09 / BASE CAMP — DROP 05 PREVIEW' }
     ];
 
-    function renderLookbookAndScenes() {
-      document.getElementById('mountain-bg-img').src = getAssetSrc('mountain_peaks', SCENE_ASSETS.mountain_peaks.fallback);
-      document.getElementById('portrait-few-img').src = getAssetSrc('portrait_few', SCENE_ASSETS.portrait_few.fallback);
-    }
-
     function refreshAllVisuals() {
       renderHero();
       renderCollectionGrid();
-      renderColdOps();
-      renderLookbookAndScenes();
       renderCartUI();
     }
 
@@ -1586,26 +1502,6 @@
       document.getElementById('hud-temp').textContent = `${temp}°C`;
       document.getElementById('hud-bar').style.width = `${Math.max(6, Math.round(pct * 100))}%`;
 
-      // Kinetic Weather Horizontal Shift
-      const weatherSec = document.getElementById('kinetic-weather');
-      if (weatherSec) {
-        const rect = weatherSec.getBoundingClientRect();
-        const offset = (window.innerHeight - rect.top) * 0.06;
-        const l1 = document.getElementById('kinetic-line-1');
-        const l2 = document.getElementById('kinetic-line-2');
-        const l3 = document.getElementById('kinetic-line-3');
-        if (l1 && l2 && l3) {
-          l1.style.transform = `translateX(${Math.min(40, offset - 20)}px)`;
-          l2.style.transform = `translateX(${Math.max(-40, 20 - offset)}px)`;
-          l3.style.transform = `translateX(${Math.min(35, offset * 0.7 - 15)}px)`;
-        }
-        const kl = l1 ? l1.parentElement : null;
-        if (kl) {
-          const p = Math.min(1, Math.max(0, (window.innerHeight - rect.top) / (window.innerHeight + rect.height)));
-          kl.style.transformOrigin = 'left bottom';
-          kl.style.transform = `scale(${0.62 + p * 0.38}) translateY(${(1 - p) * 36}px)`;
-        }
-      }
     }
 
     // Proof Card Number Count-Up Observer
@@ -1840,7 +1736,6 @@
       // Initial render with crisp SVG fallbacks
       refreshAllVisuals();
       updateNBStatusUI();
-      initDragCarousel();
       initSnowCanvases();
       initReveals();
       window.addEventListener('scroll', handleScroll, { passive: true });
