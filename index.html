@@ -112,9 +112,21 @@
     .specs-armed .spec-pin { opacity: 0; transform: scale(0.3); }
     .specs-armed .spec-pin.pin-in { opacity: 1; transform: scale(1); }
 
-    /* Preloader diagonal wipe exit */
-    #preloader { clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%); transition: opacity 0.7s ease, clip-path 0.8s cubic-bezier(0.22, 1, 0.36, 1); }
-    #preloader.preloader-done { clip-path: polygon(0 0, 100% 0, 100% 0%, 0 16%); opacity: 0; }
+    /* Split-panel opener: sky-blue halves, Love up / melt down */
+    .loader-panel { position: absolute; inset: 0; background: radial-gradient(circle at 52% 45%, #7b9bb8 0%, #52708b 48%, #344d64 100%); transition: transform 0.95s cubic-bezier(0.76, 0, 0.24, 1); }
+    .loader-panel-top { clip-path: polygon(0 0, 100% 0, 100% 44%, 0 56%); }
+    .loader-panel-bottom { clip-path: polygon(0 56%, 100% 44%, 100% 100%, 0 100%); }
+    @media (min-width: 768px) {
+      .loader-panel-top { clip-path: polygon(0 0, 100% 0, 100% 40%, 0 60%); }
+      .loader-panel-bottom { clip-path: polygon(0 60%, 100% 40%, 100% 100%, 0 100%); }
+    }
+    #preloader.loader-open .loader-panel-top { transform: translateY(-104%); }
+    #preloader.loader-open .loader-panel-bottom { transform: translateY(104%); }
+    .loader-stack { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%) rotate(-13deg); font-family: 'Anton', sans-serif; color: #ffffff; text-align: center; line-height: 0.95; font-size: clamp(64px, 14vw, 128px); }
+    @media (min-width: 768px) { .loader-stack { transform: translate(-50%, -50%) rotate(-7deg); } }
+    .loader-gap { height: 0.42em; }
+    .loader-seam { position: absolute; left: -20%; width: 140%; top: 50%; height: 2px; background: rgba(255, 255, 255, 0.35); transform: rotate(-13deg); }
+    @media (min-width: 768px) { .loader-seam { transform: rotate(-7deg); } }
 
 
     /* --- Reel-match v2: title reveal, squall sweep, scroll reveals, footer climb --- */
@@ -150,12 +162,7 @@
     @keyframes climberBob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-4px); } }
 
 
-    /* --- Reel-match v3: hero diagonal-band reveal + ambient background drift --- */
-    #hero.hero-reveal { animation: heroDiag 0.85s cubic-bezier(0.22, 1, 0.36, 1) both; }
-    @keyframes heroDiag {
-      0% { clip-path: polygon(0 86%, 100% 60%, 100% 63%, 0 89%); }
-      100% { clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%); }
-    }
+    /* --- Reel-match v3: ambient hero background drift --- */
     .hero-blob { position: absolute; border-radius: 9999px; filter: blur(60px); pointer-events: none; z-index: 1; }
     @keyframes blobDrift1 { from { transform: translate(0, 0) scale(1); } to { transform: translate(70px, 34px) scale(1.12); } }
     @keyframes blobDrift2 { from { transform: translate(0, 0) scale(1.1); } to { transform: translate(-60px, -26px) scale(0.96); } }
@@ -262,28 +269,14 @@
   <!-- =========================================================
        1. FULLSCREEN PRELOADER (00:00)
   ========================================================== -->
-  <div id="preloader" class="fixed inset-0 z-[100] bg-[#2b4156] text-white flex flex-col justify-between p-6 sm:p-10 transition-all duration-700">
-    <div class="flex items-center justify-between font-mono text-[11px] sm:text-xs tracking-widest uppercase text-white/70">
-      <span>DROP 01 · FW25</span>
-      <span>Summit</span>
+  <div id="preloader" class="fixed inset-0 z-[100] overflow-hidden">
+    <div class="loader-panel loader-panel-top">
+      <div class="loader-stack"><div>Love</div><div class="loader-gap"></div><div>melt</div></div>
+      <div class="loader-seam"></div>
     </div>
-
-    <div class="flex flex-col items-center justify-center">
-      <!-- LoveMelt Hand-Brushed Graffiti SVG Logo -->
-      <div class="font-display text-6xl sm:text-7xl md:text-8xl tracking-wide text-white">LoveMelt</div>
-      <div class="mt-6 w-44 h-1 bg-white/15 rounded-full overflow-hidden">
-        <div id="preloader-bar" class="h-full bg-white rounded-full transition-all duration-100" style="width: 0%;"></div>
-      </div>
-    </div>
-
-    <div class="flex items-end justify-between">
-      <div class="font-display text-5xl sm:text-7xl tracking-tight leading-none">
-        <span id="preloader-alt">0000</span><span class="text-xl sm:text-2xl ml-1 text-white/75 font-mono">M</span>
-      </div>
-      <div class="text-right font-mono text-[10px] sm:text-xs text-white/70 leading-relaxed">
-        <div>Temp: -19°C</div>
-        <div>45.8326° N, 6.8652° E</div>
-      </div>
+    <div class="loader-panel loader-panel-bottom">
+      <div class="loader-stack"><div>Love</div><div class="loader-gap"></div><div>melt</div></div>
+      <div class="loader-seam"></div>
     </div>
   </div>
 
@@ -455,21 +448,10 @@
         </div>
 
         <!-- Center Hero Model (reel version: model stands over the watermark) -->
-        <div class="relative flex lg:col-span-4 items-start justify-center pointer-events-none w-full">
-          <img id="hero-model-img" alt="LoveMelt hero colourway" class="w-full max-w-[430px] h-[54vh] lg:h-[70vh] object-contain drop-shadow-[0_38px_30px_rgba(8,18,30,0.35)]" />
+        <div class="relative flex lg:col-span-7 items-start justify-center pointer-events-none w-full">
+          <img id="hero-model-img" alt="LoveMelt hero colourway" class="w-full max-w-[400px] h-[56vh] lg:h-[74vh] object-contain drop-shadow-[0_38px_30px_rgba(8,18,30,0.35)]" />
         </div>
 
-        <!-- Right 4-Colourway Selector Stack -->
-        <div class="lg:col-span-3 flex flex-col gap-2.5 hero-rise" style="animation-delay:2.02s">
-          <div id="colourway-stack" class="grid grid-cols-2 lg:grid-cols-1 gap-2.5">
-            <!-- Populated by JS -->
-          </div>
-          <div class="hidden lg:flex items-center justify-end mt-2 font-mono text-xs text-white/75">
-            <span id="hero-counter" class="font-bold text-white">01</span>
-            <span class="mx-1 text-white/40">/</span>
-            <span>04</span>
-          </div>
-        </div>
       </div>
     </section>
 
@@ -1138,20 +1120,7 @@
       document.getElementById('hero-title').textContent = item.name;
       document.getElementById('hero-price').textContent = `$${item.price.toLocaleString()}`;
       document.getElementById('hero-spec-1').textContent = item.spec;
-      document.getElementById('hero-counter').textContent = `0${activeHeroIdx + 1}`;
 
-      const stack = document.getElementById('colourway-stack');
-      stack.innerHTML = HERO_COLOURWAYS.map((c, idx) => {
-        const isActive = idx === activeHeroIdx;
-        return `
-          <button onclick="selectHeroColourway(${idx})" class="flex items-center gap-3 p-2.5 rounded-2xl text-left transition-all ${isActive ? 'bg-white/25 border border-white/60 shadow-lg scale-[1.02]' : 'bg-white/10 border border-white/15 hover:bg-white/18'} backdrop-blur-md text-white">
-            <img src="${getAssetSrc(c.assetKey, c.fallback)}" alt="${c.name}" class="w-12 h-14 rounded-xl object-cover shrink-0 border border-white/20" />
-            <div class="min-w-0">
-              <div class="font-display text-lg tracking-wide leading-tight truncate">${c.name}</div>
-              <div class="font-mono text-[11px] text-white/75">$${c.price.toLocaleString()}</div>
-            </div>
-          </button>`;
-      }).join('');
     }
 
     function selectHeroColourway(idx) {
@@ -1741,30 +1710,14 @@
       window.addEventListener('scroll', handleScroll, { passive: true });
       handleScroll();
 
-      // Preloader Altitude Animation (0 -> 8809M over ~1.5s)
+      // Split-panel opener: Love rides up, melt rides down; jackets then auto-rotate
       const preloader = document.getElementById('preloader');
-      const altEl = document.getElementById('preloader-alt');
-      const barEl = document.getElementById('preloader-bar');
-      const start = performance.now();
-      const duration = 950;
-
-      function runPreloader(now) {
-        const p = Math.min(1, (now - start) / duration);
-        const eased = 1 - Math.pow(1 - p, 4);
-        altEl.textContent = String(Math.round(eased * 8848)).padStart(4, '0');
-        barEl.style.width = `${Math.round(eased * 100)}%`;
-        if (p < 1) {
-          requestAnimationFrame(runPreloader);
-        } else {
-          setTimeout(() => {
-            preloader.classList.add('preloader-done');
-            preloader.style.pointerEvents = 'none';
-            document.getElementById('hero').classList.add('hero-reveal');
-            setTimeout(() => preloader.remove(), 700);
-          }, 120);
-        }
-      }
-      requestAnimationFrame(runPreloader);
+      setTimeout(() => {
+        preloader.classList.add('loader-open');
+        preloader.style.pointerEvents = 'none';
+        setTimeout(() => preloader.remove(), 1100);
+      }, 850);
+      setInterval(() => { if (!document.hidden) selectHeroColourway((activeHeroIdx + 1) % HERO_COLOURWAYS.length); }, 3400);
 
       // Reel-match v2: a reveal system for every section + the footer wordmark climb
     function initReveals() {
