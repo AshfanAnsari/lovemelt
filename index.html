@@ -149,6 +149,17 @@
     .footer-word.in { transform: translateY(0); transition: transform 1.1s cubic-bezier(0.22, 1, 0.36, 1); }
     @keyframes climberBob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-4px); } }
 
+
+    /* --- Reel-match v3: hero diagonal-band reveal + ambient background drift --- */
+    #hero.hero-reveal { animation: heroDiag 0.85s cubic-bezier(0.22, 1, 0.36, 1) both; }
+    @keyframes heroDiag {
+      0% { clip-path: polygon(0 86%, 100% 60%, 100% 63%, 0 89%); }
+      100% { clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%); }
+    }
+    .hero-blob { position: absolute; border-radius: 9999px; filter: blur(60px); pointer-events: none; z-index: 1; }
+    @keyframes blobDrift1 { from { transform: translate(0, 0) scale(1); } to { transform: translate(70px, 34px) scale(1.12); } }
+    @keyframes blobDrift2 { from { transform: translate(0, 0) scale(1.1); } to { transform: translate(-60px, -26px) scale(0.96); } }
+
     /* Floating jacket bobbing */
     @keyframes floatJacket {
       0%, 100% { transform: translateY(0px) rotate(-2deg); }
@@ -285,8 +296,8 @@
       <nav class="hidden md:flex items-center gap-7 text-xs font-medium tracking-wide text-white/90">
         <a href="#collection" class="hover:text-white transition">Shop</a>
         <a href="#hero" class="hover:text-white transition">Puffers</a>
-        <a href="#lookbook" class="hover:text-white transition">Lookbook</a>
-        <a href="#story" class="hover:text-white transition">Story</a>
+        <a href="#kinetic-weather" class="hover:text-white transition">Weather</a>
+        <a href="#cold-ops" class="hover:text-white transition">Cold Ops</a>
       </nav>
 
       <!-- Mobile Menu Button -->
@@ -301,7 +312,7 @@
 
       <!-- Right Controls -->
       <div class="flex items-center gap-2 sm:gap-2.5">
-        <a href="#footer" class="hidden sm:inline-block text-xs font-medium text-white/85 hover:text-white mr-2 transition">Help</a>
+        <a href="#cold-ops" class="hidden sm:inline-block text-xs font-medium text-white/85 hover:text-white mr-2 transition">Gear</a>
         <button onclick="openSearchModal()" class="w-9 h-9 rounded-full glass-pill text-white flex items-center justify-center hover:bg-white/25 transition" aria-label="Search">
           <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
         </button>
@@ -324,8 +335,7 @@
       <a href="#collection" onclick="toggleMobileMenu()" class="py-1.5 border-b border-white/10">Shop Collection</a>
       <a href="#hero" onclick="toggleMobileMenu()" class="py-1.5 border-b border-white/10">Puffers</a>
       <a href="#cold-ops" onclick="toggleMobileMenu()" class="py-1.5 border-b border-white/10">Cold Ops Gear</a>
-      <a href="#lookbook" onclick="toggleMobileMenu()" class="py-1.5 border-b border-white/10">FW25 Lookbook</a>
-      <a href="#story" onclick="toggleMobileMenu()" class="py-1.5">Alpine Story</a>
+      <a href="#kinetic-weather" onclick="toggleMobileMenu()" class="py-1.5 border-b border-white/10">Mountain Weather</a>
     </div>
   </header>
 
@@ -387,6 +397,8 @@
 
       <!-- Snow Canvas Layer -->
       <canvas id="snow-canvas-hero" class="snow-canvas absolute inset-0 w-full h-full pointer-events-none z-20"></canvas>
+      <div class="hero-blob w-[46vw] h-[46vw] bg-white/40 -top-[12%] -left-[10%]" style="animation: blobDrift1 26s ease-in-out infinite alternate;"></div>
+      <div class="hero-blob w-[38vw] h-[38vw] bg-sky-200/40 -bottom-[16%] right-[-6%]" style="animation: blobDrift2 32s ease-in-out infinite alternate;"></div>
       <div id="hero-burst"></div>
 
       <!-- Giant Translucent Background LoveMelt Watermark -->
@@ -449,7 +461,7 @@
 
         <!-- Center Hero Model (reel version: model stands over the watermark) -->
         <div class="relative flex lg:col-span-4 items-start justify-center pointer-events-none w-full">
-          <img id="hero-model-img" alt="LoveMelt hero colourway" class="w-full max-w-[410px] h-[54vh] lg:h-[70vh] object-cover object-top rounded-t-[2.2rem] shadow-[0_40px_90px_rgba(8,18,30,0.45)] [mask-image:linear-gradient(to_bottom,black_82%,transparent_99%)]" />
+          <img id="hero-model-img" alt="LoveMelt hero colourway" class="w-full max-w-[430px] h-[54vh] lg:h-[70vh] object-contain drop-shadow-[0_38px_30px_rgba(8,18,30,0.35)]" />
         </div>
 
         <!-- Right 4-Colourway Selector Stack -->
@@ -517,64 +529,7 @@
     <!-- =======================================================
          5. ENGINEERED, NOT STYLED (Animated Proof Cards)
     ======================================================== -->
-    <section id="story" class="bg-[#eef2f6] pb-24 pt-6 px-4 sm:px-8 lg:px-12">
-      <div class="max-w-[1400px] mx-auto">
-        <div class="mb-10">
-          <p class="font-mono text-xs uppercase tracking-widest text-alpine-mid mb-2">Sub-Zero Proof</p>
-          <h2 class="font-display-tight text-5xl sm:text-6xl text-alpine-charcoal">ENGINEERED, NOT STYLED</h2>
-        </div>
-
-        <div id="proof-grid" class="rv-group grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-          <!-- Card 1 -->
-          <div class="relative h-[380px] sm:h-[420px] rounded-[1.75rem] overflow-hidden shadow-lg group">
-            <img id="proof-img-0" alt="Extreme cold rating" class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
-            <div class="absolute inset-0 bg-gradient-to-t from-[#0d131a]/90 via-[#121b24]/30 to-transparent"></div>
-            <div class="relative z-10 h-full flex flex-col justify-end p-6 text-white">
-              <div class="font-display text-6xl sm:text-7xl tracking-tight leading-none mb-2">
-                <span class="proof-counter" data-target="-44" data-prefix="" data-suffix="°C">0°C</span>
-              </div>
-              <p class="text-xs text-white/80 leading-relaxed">Extreme cold rating tested in Arctic blasts & high-altitude ridgelines.</p>
-            </div>
-          </div>
-
-          <!-- Card 2 -->
-          <div class="relative h-[380px] sm:h-[420px] rounded-[1.75rem] overflow-hidden shadow-lg group">
-            <img id="proof-img-1" alt="Goose down fill power" class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
-            <div class="absolute inset-0 bg-gradient-to-t from-[#0d131a]/90 via-[#121b24]/30 to-transparent"></div>
-            <div class="relative z-10 h-full flex flex-col justify-end p-6 text-white">
-              <div class="font-display text-6xl sm:text-7xl tracking-tight leading-none mb-2">
-                <span class="proof-counter" data-target="816" data-prefix="" data-suffix="">0</span><span class="text-2xl font-mono ml-1 text-sky-200">FP</span>
-              </div>
-              <p class="text-xs text-white/80 leading-relaxed">Fill power of our ethically certified hydrophobic goose down chambers.</p>
-            </div>
-          </div>
-
-          <!-- Card 3 -->
-          <div class="relative h-[380px] sm:h-[420px] rounded-[1.75rem] overflow-hidden shadow-lg group">
-            <img id="proof-img-2" alt="Two layer storm shell" class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
-            <div class="absolute inset-0 bg-gradient-to-t from-[#0d131a]/90 via-[#121b24]/30 to-transparent"></div>
-            <div class="relative z-10 h-full flex flex-col justify-end p-6 text-white">
-              <div class="font-display text-6xl sm:text-7xl tracking-tight leading-none mb-2">
-                <span class="proof-counter" data-target="2" data-prefix="" data-suffix="">0</span><span class="text-2xl font-mono ml-1 text-sky-200">L</span>
-              </div>
-              <p class="text-xs text-white/80 leading-relaxed">Two layers of ripstop storm membrane, welded to weather the storm.</p>
-            </div>
-          </div>
-
-          <!-- Card 4 -->
-          <div class="relative h-[380px] sm:h-[420px] rounded-[1.75rem] overflow-hidden shadow-lg group">
-            <img id="proof-img-3" alt="Wind tunnel hours" class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
-            <div class="absolute inset-0 bg-gradient-to-t from-[#0d131a]/90 via-[#121b24]/30 to-transparent"></div>
-            <div class="relative z-10 h-full flex flex-col justify-end p-6 text-white">
-              <div class="font-display text-6xl sm:text-7xl tracking-tight leading-none mb-2">
-                <span class="proof-counter" data-target="42" data-prefix="" data-suffix="">0</span><span class="text-2xl font-mono ml-1 text-sky-200">H</span>
-              </div>
-              <p class="text-xs text-white/80 leading-relaxed">Hours of continuous sub-zero wind-tunnel validation, zero seam leaks.</p>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
+    
 
     <!-- =======================================================
          6. KINETIC WEATHER TYPOGRAPHY (00:14 - 00:16)
@@ -634,93 +589,7 @@
     <!-- =======================================================
          7. FLOATING JACKET & PINNED SPECS (00:17 - 00:18)
     ======================================================== -->
-    <section id="floating-specs" class="relative min-h-[95vh] bg-gradient-to-b from-[#5d7a94] via-[#4a647c] to-[#365068] text-white py-20 px-4 sm:px-8 lg:px-12 overflow-hidden flex items-center">
-      <canvas id="snow-canvas-float" class="snow-canvas absolute inset-0 w-full h-full pointer-events-none z-10"></canvas>
-
-      <div class="relative z-20 max-w-[1400px] w-full mx-auto grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
-        <!-- Top-Left Giant Headline -->
-        <div class="lg:col-span-4 space-y-6">
-          <h2 class="font-display-tight text-4xl sm:text-5xl xl:text-6xl leading-[0.96]">
-            WHEN THE COLD HITS, EVERYTHING ELSE GOES <span class="text-sky-200/80">QUIET</span>
-          </h2>
-          <div class="font-mono text-xs text-white/75 space-y-1">
-            <div>Arctic 01 · Expedition Puffer</div>
-            <div>1.12 kg · 800FP Hydrophobic Down</div>
-            <div>Shell: 2L Recycled Ripstop Nylon</div>
-          </div>
-        </div>
-
-        <!-- Center Floating Jacket + Interactive Spec Pins -->
-        <div class="lg:col-span-5 relative flex items-center justify-center py-6">
-          <div id="float-wrap" class="relative w-full max-w-[430px] aspect-[4/5] flex items-center justify-center">
-            <!-- Floating Jacket Visual -->
-            <div class="animate-float-jacket relative w-full h-full rounded-[2rem] overflow-hidden shadow-[0_35px_90px_rgba(10,20,32,0.5)] border border-white/25 bg-[#45617a]/40">
-              <img id="floating-jacket-img" alt="Floating Arctic 01 Jacket" class="w-full h-full object-cover" />
-            </div>
-
-            <!-- Tucked LoveMelt Logo -->
-            <span class="absolute -bottom-3 right-3 font-display text-xl tracking-wide text-white drop-shadow-xl pointer-events-none z-30">LoveMelt</span>
-
-            <!-- 4 Interactive Spec Pins -->
-            <!-- Pin 1: Storm-Lock Hood -->
-            <div class="spec-pin group absolute top-[18%] left-[44%] z-30">
-              <button class="pin-pulse w-7 h-7 rounded-full bg-white text-alpine-charcoal font-bold text-xs flex items-center justify-center shadow-lg">+</button>
-              <div class="hidden group-hover:block group-focus-within:block absolute left-9 top-1/2 -translate-y-1/2 w-48 p-3 rounded-xl glass-dark text-white text-[11px] shadow-2xl">
-                <div class="font-mono font-semibold text-sky-200 mb-0.5">STORM-LOCK HOOD</div>
-                <div class="text-white/80">Helmet-compatible cinch hood with internal draft collar.</div>
-              </div>
-            </div>
-
-            <!-- Pin 2: 800FP Goose Down -->
-            <div class="spec-pin group absolute top-[43%] right-[16%] z-30">
-              <button class="pin-pulse w-7 h-7 rounded-full bg-white text-alpine-charcoal font-bold text-xs flex items-center justify-center shadow-lg">+</button>
-              <div class="hidden group-hover:block group-focus-within:block absolute right-9 top-1/2 -translate-y-1/2 w-48 p-3 rounded-xl glass-dark text-white text-[11px] shadow-2xl">
-                <div class="font-mono font-semibold text-sky-200 mb-0.5">800FP GOOSE DOWN</div>
-                <div class="text-white/80">Box-wall baffle chambers eliminate cold spots down to -40°C.</div>
-              </div>
-            </div>
-
-            <!-- Pin 3: 2L Ripstop Shell -->
-            <div class="spec-pin group absolute top-[54%] left-[18%] z-30">
-              <button class="pin-pulse w-7 h-7 rounded-full bg-white text-alpine-charcoal font-bold text-xs flex items-center justify-center shadow-lg">+</button>
-              <div class="hidden group-hover:block group-focus-within:block absolute left-9 top-1/2 -translate-y-1/2 w-48 p-3 rounded-xl glass-dark text-white text-[11px] shadow-2xl">
-                <div class="font-mono font-semibold text-sky-200 mb-0.5">2L RIPSTOP SHELL</div>
-                <div class="text-white/80">20,000mm waterproof membrane with DWR snow-shedding finish.</div>
-              </div>
-            </div>
-
-            <!-- Pin 4: Taped Seam Zippers -->
-            <div class="spec-pin group absolute bottom-[22%] left-[47%] z-30">
-              <button class="pin-pulse w-7 h-7 rounded-full bg-white text-alpine-charcoal font-bold text-xs flex items-center justify-center shadow-lg">+</button>
-              <div class="hidden group-hover:block group-focus-within:block absolute left-9 top-1/2 -translate-y-1/2 w-48 p-3 rounded-xl glass-dark text-white text-[11px] shadow-2xl">
-                <div class="font-mono font-semibold text-sky-200 mb-0.5">TAPED SEAM ZIPPERS</div>
-                <div class="text-white/80">YKK AquaGuard® matte zippers with glove-friendly pull tabs.</div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Right CTA & Bottom-Right Statement -->
-        <div class="spec-side lg:col-span-3 flex flex-col lg:items-end justify-between gap-10">
-          <div class="text-left lg:text-right font-mono text-[11px] text-white/75">
-            <div>Tested at -40°C</div>
-            <div>Chamonix North Face</div>
-          </div>
-
-          <button onclick="addProductById('arctic01', 'M', this)" class="group inline-flex items-center gap-3.5 bg-white text-alpine-charcoal pl-6 pr-2 py-2.5 rounded-full font-semibold text-sm shadow-2xl hover:scale-[1.03] transition">
-            <span>Shop Arctic 01</span>
-            <span class="font-mono font-bold">$899</span>
-            <span class="w-8 h-8 rounded-full bg-alpine-charcoal text-white flex items-center justify-center">→</span>
-          </button>
-
-          <div class="lg:text-right">
-            <h3 class="font-display-tight text-3xl sm:text-4xl text-white">
-              YOU DON'T FEEL COLD.<br /><span class="text-sky-200">YOU FEEL LESS.</span>
-            </h3>
-          </div>
-        </div>
-      </div>
-    </section>
+    
 
     <!-- =======================================================
          8. COLD OPS INVENTORY (Grab-and-Throw Carousel)
@@ -752,247 +621,20 @@
     <!-- =======================================================
          9. FW25 LOOKBOOK ("SHOT ABOVE THE CLOUD LINE")
     ======================================================== -->
-    <section id="lookbook" class="bg-[#2b4156] text-white py-24 px-4 sm:px-8 lg:px-12">
-      <div class="max-w-[1400px] mx-auto grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
-        <!-- Left 3x3 Alpine Grid -->
-        <div id="lookbook-grid" class="rv-group lg:col-span-7 grid grid-cols-3 gap-2.5 sm:gap-3.5">
-          <!-- Populated by JS -->
-        </div>
-
-        <!-- Right Copy -->
-        <div class="lg:col-span-5 space-y-5">
-          <p class="font-mono text-xs uppercase tracking-widest text-sky-200/75">FW25 Lookbook · 3,842 M</p>
-          <h2 class="font-display-tight text-5xl sm:text-6xl xl:text-7xl leading-[0.94]">
-            SHOT ABOVE<br />THE CLOUD LINE
-          </h2>
-          <p class="text-sm text-white/75 leading-relaxed max-w-md">
-            Six looks, three peaks, one week at -22°C. No studio light, no retouched snow. Click any frame to inspect in fullscreen.
-          </p>
-          <button onclick="openLightbox(0)" class="inline-flex items-center gap-3 bg-white text-alpine-charcoal px-6 py-3 rounded-full text-xs font-semibold hover:bg-sky-100 transition shadow-xl">
-            <span>Open the lookbook</span>
-            <span>↗</span>
-          </button>
-        </div>
-      </div>
-    </section>
+    
 
     <!-- =======================================================
          10. SUMMIT LOG (Interactive Mountain Review Climber)
     ======================================================== -->
-    <section id="summit-log" class="bg-[#0d131a] text-white py-24 px-4 sm:px-8 lg:px-12 overflow-hidden">
-      <div class="max-w-[1400px] mx-auto grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
-
-        <!-- Left Rating & Revealed Reviews -->
-        <div class="lg:col-span-5 space-y-6">
-          <div>
-            <p class="font-mono text-xs uppercase tracking-widest text-sky-300/75 mb-2">Field Reports</p>
-            <h2 class="font-display-tight text-5xl sm:text-6xl lg:text-7xl">SUMMIT LOG</h2>
-          </div>
-
-          <div class="flex items-center gap-4">
-            <span id="summit-rating-num" class="font-display text-6xl text-white">3.0</span>
-            <div>
-              <div id="summit-stars" class="text-amber-300 text-lg tracking-wider">★★★☆☆</div>
-              <div id="summit-report-count" class="font-mono text-[11px] text-white/60">Click or drag CLIMB to plant flags</div>
-            </div>
-          </div>
-
-          <p class="text-xs text-white/70 leading-relaxed max-w-sm">
-            Every flag is a jacket that went somewhere cold. Advance up the ridge to plant altitude markers and read verified field reports.
-          </p>
-
-          <!-- Revealed Expedition Reviews -->
-          <div id="summit-reviews-list" class="space-y-3 min-h-[160px]">
-            <div class="p-4 rounded-2xl bg-white/5 border border-white/10 text-xs text-white/55 font-mono">
-              Base Camp ready — press <span class="text-white font-semibold">CLIMB</span> on the ridge to reveal expedition reviews.
-            </div>
-          </div>
-        </div>
-
-        <!-- Right Interactive Mountain Ridge Climber -->
-        <div class="lg:col-span-7">
-          <div id="ridge-stage" class="relative w-full h-[420px] sm:h-[480px] rounded-[2rem] bg-gradient-to-b from-[#16222f] to-[#0a1016] border border-white/10 overflow-hidden select-none">
-            <!-- Subtle stars -->
-            <div class="absolute inset-0 opacity-30" style="background-image: radial-gradient(white 1px, transparent 1px); background-size: 42px 42px;"></div>
-
-            <!-- Mountain Silhouette SVG -->
-            <svg class="absolute inset-0 w-full h-full" viewBox="0 0 800 480" preserveAspectRatio="none">
-              <defs>
-                <linearGradient id="mtnGrad" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stop-color="#5d7a94" stop-opacity="0.72"/>
-                  <stop offset="100%" stop-color="#0d131a" stop-opacity="0.98"/>
-                </linearGradient>
-              </defs>
-              <!-- Back ridge -->
-              <polygon points="0,480 140,340 270,380 460,210 610,275 800,190 800,480" fill="#1b2b3b" opacity="0.65"/>
-              <!-- Main climbable peak -->
-              <polygon points="0,480 95,410 210,360 340,295 470,225 585,140 675,105 800,260 800,480" fill="url(#mtnGrad)"/>
-              <!-- Glowing Climb Path -->
-              <path id="ridge-path-bg" d="M 95 410 L 210 360 L 340 295 L 470 225 L 585 140 L 675 105" stroke="rgba(255,255,255,0.22)" stroke-width="3" fill="none" stroke-dasharray="6 6"/>
-              <path id="ridge-path-active" d="M 95 410 L 210 360 L 340 295 L 470 225 L 585 140 L 675 105" stroke="#bae6fd" stroke-width="3.5" fill="none" stroke-linecap="round" stroke-dasharray="720" stroke-dashoffset="720" style="transition: stroke-dashoffset 0.65s cubic-bezier(0.22,1,0.36,1);"/>
-            </svg>
-
-            <!-- Planted Flag Markers (Positioned via %) -->
-            <div id="ridge-flags-container" class="absolute inset-0 pointer-events-none"></div>
-
-            <!-- Interactive CLIMB Button -->
-            <button id="climb-btn" onclick="advanceClimb()" class="absolute bottom-7 right-7 z-20 w-20 h-20 rounded-full bg-white text-alpine-charcoal font-mono text-xs font-bold tracking-wider shadow-[0_0_40px_rgba(186,230,253,0.55)] hover:scale-105 active:scale-95 transition flex flex-col items-center justify-center gap-0.5">
-              <span>CLIMB</span>
-              <span id="climb-step-label" class="text-[9px] text-alpine-mid">0 / 5</span>
-            </button>
-
-            <div class="absolute top-5 left-6 font-mono text-[11px] text-white/60">
-              ALTITUDE PROGRESS · <span id="ridge-alt-readout" class="text-sky-200 font-semibold">BASE 2,400M</span>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
+    
 
     <!-- =======================================================
          11. DROP 05 COUNTDOWN & CLIMBING FOOTER (00:25 - 00:27)
     ======================================================== -->
-    <section id="drop-countdown" class="relative min-h-[72vh] bg-[#121b24] text-white flex items-center py-24 px-4 sm:px-8 lg:px-12 overflow-hidden">
-      <img id="drop05-bg-img" alt="Drop 05 Summit Camp" class="absolute inset-0 w-full h-full object-cover opacity-55" />
-      <div class="absolute inset-0 bg-gradient-to-r from-[#0d131a]/92 via-[#121b24]/65 to-transparent"></div>
-      <canvas id="snow-canvas-drop" class="snow-canvas absolute inset-0 w-full h-full pointer-events-none z-10"></canvas>
-
-      <div class="relative z-20 max-w-[1400px] w-full mx-auto">
-        <p class="font-mono text-xs uppercase tracking-widest text-sky-300/80 mb-3">Next Drop · Under The Ice</p>
-        <h2 class="font-display-tight text-6xl sm:text-7xl lg:text-[92px] leading-[0.92] mb-8">
-          DROP 05<br />SUMMIT
-        </h2>
-
-        <!-- Live Countdown -->
-        <div class="flex flex-wrap items-center gap-5 sm:gap-8 mb-10 font-mono">
-          <div>
-            <div id="cd-days" class="font-display text-4xl sm:text-6xl">39</div>
-            <div class="text-[10px] uppercase tracking-widest text-white/60">Days</div>
-          </div>
-          <div class="text-2xl text-white/30">:</div>
-          <div>
-            <div id="cd-hours" class="font-display text-4xl sm:text-6xl">00</div>
-            <div class="text-[10px] uppercase tracking-widest text-white/60">Hours</div>
-          </div>
-          <div class="text-2xl text-white/30">:</div>
-          <div>
-            <div id="cd-mins" class="font-display text-4xl sm:text-6xl">39</div>
-            <div class="text-[10px] uppercase tracking-widest text-white/60">Min</div>
-          </div>
-          <div class="text-2xl text-white/30">:</div>
-          <div>
-            <div id="cd-secs" class="font-display text-4xl sm:text-6xl text-sky-200">33</div>
-            <div class="text-[10px] uppercase tracking-widest text-white/60">Sec</div>
-          </div>
-        </div>
-
-        <!-- Waitlist Form -->
-        <form onsubmit="handleWaitlist(event, 'Drop 05 Summit waitlist')" class="flex flex-col sm:flex-row gap-3 max-w-md">
-          <input type="email" required placeholder="Your email for first access" class="flex-1 bg-white/10 border border-white/20 rounded-full px-5 py-3 text-xs text-white placeholder:text-white/50 focus:outline-none focus:border-white" />
-          <button type="submit" class="inline-flex items-center justify-center gap-2 bg-white text-alpine-charcoal px-6 py-3 rounded-full text-xs font-semibold hover:bg-sky-100 transition">
-            <span>Join the waitlist</span>
-            <span>→</span>
-          </button>
-        </form>
-      </div>
-    </section>
+    
 
     <!-- Light-Gray Footer Links -->
-    <footer id="footer" class="bg-[#eef2f6] text-alpine-charcoal pt-20">
-      <div class="max-w-[1400px] mx-auto px-4 sm:px-8 lg:px-12 pb-16 grid grid-cols-1 md:grid-cols-12 gap-10">
-        <!-- Newsletter -->
-        <div class="md:col-span-5 space-y-4">
-          <h3 class="font-display-tight text-4xl sm:text-5xl">BE FIRST<br />AT ALTITUDE.</h3>
-          <p class="text-xs text-alpine-mid max-w-sm leading-relaxed">
-            New drops, private archive sales, and field dispatches. One email per drop. Nothing more.
-          </p>
-          <form onsubmit="handleWaitlist(event, 'LoveMelt altitude dispatch')" class="flex gap-2 max-w-sm">
-            <input type="email" required placeholder="Your email" class="flex-1 bg-white border border-slate-300 rounded-full px-4 py-2.5 text-xs focus:outline-none focus:border-alpine-charcoal" />
-            <button type="submit" class="bg-alpine-charcoal text-white px-5 py-2.5 rounded-full text-xs font-semibold hover:bg-alpine-deep transition">Subscribe →</button>
-          </form>
-        </div>
-
-        <!-- Shop Links -->
-        <div class="md:col-span-2 space-y-2.5 text-xs">
-          <div class="font-mono font-bold uppercase tracking-wider text-alpine-charcoal mb-3">Shop</div>
-          <a href="#collection" class="block text-alpine-mid hover:text-alpine-charcoal">All gear</a>
-          <a href="#hero" class="block text-alpine-mid hover:text-alpine-charcoal">Puffers</a>
-          <a href="#collection" class="block text-alpine-mid hover:text-alpine-charcoal">Shells &amp; Layers</a>
-          <a href="#cold-ops" class="block text-alpine-mid hover:text-alpine-charcoal">Cold Ops</a>
-          <a href="#lookbook" class="block text-alpine-mid hover:text-alpine-charcoal">Lookbook</a>
-        </div>
-
-        <!-- Help Links -->
-        <div class="md:col-span-2 space-y-2.5 text-xs">
-          <div class="font-mono font-bold uppercase tracking-wider text-alpine-charcoal mb-3">Help</div>
-          <button onclick="showToast('Free express global shipping on all FW25 orders.')" class="block text-alpine-mid hover:text-alpine-charcoal">Shipping &amp; returns</button>
-          <button onclick="showToast('2-year alpine warranty covers all down & seam repairs.')" class="block text-alpine-mid hover:text-alpine-charcoal">Warranty</button>
-          <button onclick="showToast('Order tracking activates immediately after dispatch.')" class="block text-alpine-mid hover:text-alpine-charcoal">Track order</button>
-          <button onclick="showToast('Support: basecamp@kryoth-alpine.com')" class="block text-alpine-mid hover:text-alpine-charcoal">Contact</button>
-        </div>
-
-        <!-- Studio & Social -->
-        <div class="md:col-span-3 md:text-right space-y-3 text-xs text-alpine-mid">
-          <div class="font-mono">Chamonix · 74400 France</div>
-          <div>Studio &amp; Sub-Zero Lab</div>
-          <div class="flex md:justify-end gap-2 pt-2">
-            <a href="#hero" class="w-9 h-9 rounded-full bg-alpine-charcoal text-white flex items-center justify-center hover:bg-alpine-deep transition font-mono text-[10px]">IG</a>
-            <a href="#hero" class="w-9 h-9 rounded-full bg-alpine-charcoal text-white flex items-center justify-center hover:bg-alpine-deep transition font-mono text-[10px]">TT</a>
-            <a href="#hero" class="w-9 h-9 rounded-full bg-alpine-charcoal text-white flex items-center justify-center hover:bg-alpine-deep transition font-mono text-[10px]">YT</a>
-          </div>
-        </div>
-      </div>
-
-      <!-- Panoramic Climbing LoveMelt Footer (00:27) -->
-      <div class="relative w-full h-[340px] sm:h-[440px] overflow-hidden bg-gradient-to-b from-[#eef2f6] via-[#d7e2ec] to-[#8ea5ba] flex flex-col justify-end">
-        <canvas id="snow-canvas-footer" class="snow-canvas absolute inset-0 w-full h-full pointer-events-none z-20"></canvas>
-
-        <!-- Giant LoveMelt Wordmark + Perched Illustrated Climbers -->
-        <div class="relative z-10 max-w-[1440px] w-full mx-auto px-4 flex flex-col items-center">
-          <div class="relative w-full text-center select-none">
-            <!-- Tiny Perched Alpine Climbers SVG -->
-            <svg class="absolute -top-9 sm:-top-12 left-0 w-full h-14 sm:h-20 pointer-events-none z-20" viewBox="0 0 1200 100" fill="none">
-              <!-- Climber 1 sitting on K -->
-              <g transform="translate(175, 22)">
-                <circle cx="14" cy="12" r="8" fill="#181b20"/>
-                <rect x="7" y="10" width="14" height="5" rx="2" fill="#93c5fd"/>
-                <path d="M4 22 C4 18 24 18 24 22 L28 48 L0 48 Z" fill="#dbeafe"/>
-                <path d="M6 48 L4 66 M20 48 L24 66" stroke="#181b20" stroke-width="5" stroke-linecap="round"/>
-              </g>
-              <!-- Climber 2 crouched on Y -->
-              <g transform="translate(555, 8)">
-                <circle cx="18" cy="12" r="9" fill="#181b20"/>
-                <rect x="10" y="9" width="16" height="5" rx="2" fill="#e0f2fe"/>
-                <path d="M4 23 C4 18 32 18 32 23 L36 56 L0 56 Z" fill="#6b8ba8"/>
-                <path d="M8 56 L4 74 M28 56 L32 74" stroke="#121b24" stroke-width="6" stroke-linecap="round"/>
-              </g>
-              <!-- Climber 3 rappelling near T/H -->
-              <g transform="translate(915, 28)">
-                <line x1="16" y1="-28" x2="16" y2="18" stroke="#121b24" stroke-width="2" stroke-dasharray="3 2"/>
-                <circle cx="16" cy="16" r="8" fill="#0d131a"/>
-                <path d="M6 26 C6 22 26 22 26 26 L28 52 L4 52 Z" fill="#181b20"/>
-                <path d="M9 52 L6 68 M23 52 L27 68" stroke="#0d131a" stroke-width="5" stroke-linecap="round"/>
-              </g>
-            </svg>
-
-            <div class="font-display text-[14.5vw] xl:text-[185px] leading-[0.85] tracking-tight text-[#526d87] drop-shadow-sm">
-              LoveMelt
-            </div>
-          </div>
-        </div>
-
-        <!-- Snowy Mountain Peaks Foreground Silhouette -->
-        <svg class="relative z-10 w-full h-24 sm:h-36 -mt-6" viewBox="0 0 1440 160" preserveAspectRatio="none">
-          <polygon points="0,160 120,75 260,118 420,42 590,110 740,28 920,105 1090,48 1260,115 1380,62 1440,95 1440,160" fill="#3a5268"/>
-          <polygon points="0,160 180,105 340,138 510,72 680,132 860,64 1030,128 1210,78 1440,135 1440,160" fill="#233749"/>
-        </svg>
-
-        <div class="absolute bottom-3 left-4 right-4 z-30 flex flex-wrap items-center justify-between text-[10px] font-mono text-white/75">
-          <span>© 2026 LoveMelt ALPINE LAB</span>
-          <span>Terms · Returns · Privacy · Summit 8,848 M · -19°C</span>
-        </div>
-      </div>
-    </footer>
+    
   </main>
 
   <!-- =========================================================
@@ -1329,14 +971,14 @@
     ];
 
     const COLLECTION_PRODUCTS = [
-      { id: 'arctic01', name: 'ARCTIC 01', desc: 'Insulated glacier puffer', price: 899, badge: 'NEW', assetKey: 'hero_arctic01', swatches: ['#9dc0de', '#181b20', '#e8eff5'], fallback: HERO_COLOURWAYS[0].fallback },
-      { id: 'stealth', name: 'STEALTH', desc: 'Matte obsidian puffer', price: 1199, badge: 'HOT', assetKey: 'hero_stealth', swatches: ['#181b20', '#4a647c'], fallback: HERO_COLOURWAYS[2].fallback },
-      { id: 'glacier-drop', name: 'GLACIER DROP', desc: 'Cropped alpine shell', price: 799, badge: 'NEW', assetKey: 'hero_aurora', swatches: ['#e8eff5', '#9dc0de'], fallback: HERO_COLOURWAYS[1].fallback },
-      { id: 'polar-goose', name: 'POLAR GOOSE', desc: 'Heavy expedition parka', price: 949, badge: '', assetKey: 'hero_polar', swatches: ['#f4f7fa', '#2b4156'], fallback: HERO_COLOURWAYS[3].fallback },
-      { id: 'icefield-parka', name: 'ICEFIELD PARKA', desc: 'Long stormproof down', price: 1249, badge: 'NEW', assetKey: 'hero_stealth', swatches: ['#1f2937', '#5d7a94'], fallback: makeJacketSVG('#344c63', '#6b8aa8', '#15222f', '#38bdf8', 'ICEFIELD PARKA') },
-      { id: 'spindrift-shell', name: 'SPINDRIFT SHELL', desc: '3-layer Gore ripstop', price: 689, badge: '', assetKey: 'hero_arctic01', swatches: ['#5d7a94', '#181b20'], fallback: makeJacketSVG('#5d7a94', '#94b5d1', '#253749', '#0284c7', 'SPINDRIFT SHELL') },
-      { id: 'ridge-fleece', name: 'RIDGE FLEECE', desc: 'High-pile thermal midlayer', price: 249, badge: '', assetKey: 'hero_polar', swatches: ['#cbd5e1', '#1e293b'], fallback: makeJacketSVG('#94a3b8', '#e2e8f0', '#334155', '#0f172a', 'RIDGE FLEECE') },
-      { id: 'apex-bib', name: 'APEX BIB', desc: 'Reinforced snow overall', price: 429, badge: 'HOT', assetKey: 'hero_aurora', swatches: ['#64748b', '#0f172a'], fallback: makeJacketSVG('#475569', '#94a3b8', '#1e293b', '#38bdf8', 'APEX BIB') }
+      { id: 'arctic01', name: 'ARCTIC 01', desc: 'Insulated glacier puffer', price: 899, badge: 'NEW', assetKey: 'prod_arctic01', swatches: ['#9dc0de', '#181b20', '#e8eff5'], fallback: HERO_COLOURWAYS[0].fallback },
+      { id: 'stealth', name: 'STEALTH', desc: 'Matte obsidian puffer', price: 1199, badge: 'HOT', assetKey: 'prod_stealth', swatches: ['#181b20', '#4a647c'], fallback: HERO_COLOURWAYS[2].fallback },
+      { id: 'glacier-drop', name: 'GLACIER DROP', desc: 'Cropped alpine shell', price: 799, badge: 'NEW', assetKey: 'prod_glacier', swatches: ['#e8eff5', '#9dc0de'], fallback: HERO_COLOURWAYS[1].fallback },
+      { id: 'polar-goose', name: 'POLAR GOOSE', desc: 'Heavy expedition parka', price: 949, badge: '', assetKey: 'prod_polar', swatches: ['#f4f7fa', '#2b4156'], fallback: HERO_COLOURWAYS[3].fallback },
+      { id: 'icefield-parka', name: 'ICEFIELD PARKA', desc: 'Long stormproof down', price: 1249, badge: 'NEW', assetKey: 'prod_icefield', swatches: ['#1f2937', '#5d7a94'], fallback: makeJacketSVG('#344c63', '#6b8aa8', '#15222f', '#38bdf8', 'ICEFIELD PARKA') },
+      { id: 'spindrift-shell', name: 'SPINDRIFT SHELL', desc: '3-layer Gore ripstop', price: 689, badge: '', assetKey: 'prod_spindrift', swatches: ['#5d7a94', '#181b20'], fallback: makeJacketSVG('#5d7a94', '#94b5d1', '#253749', '#0284c7', 'SPINDRIFT SHELL') },
+      { id: 'ridge-fleece', name: 'RIDGE FLEECE', desc: 'High-pile thermal midlayer', price: 249, badge: '', assetKey: 'prod_ridge', swatches: ['#cbd5e1', '#1e293b'], fallback: makeJacketSVG('#94a3b8', '#e2e8f0', '#334155', '#0f172a', 'RIDGE FLEECE') },
+      { id: 'apex-bib', name: 'APEX BIB', desc: 'Reinforced snow overall', price: 429, badge: 'HOT', assetKey: 'prod_apex', swatches: ['#64748b', '#0f172a'], fallback: makeJacketSVG('#475569', '#94a3b8', '#1e293b', '#38bdf8', 'APEX BIB') }
     ];
 
     const COLD_OPS_GEAR = [
@@ -1398,6 +1040,14 @@
       hero_stealth: 'assets/hero-stealth.webp',
       hero_polar: 'assets/hero-polar.webp',
       floating_jacket: 'assets/floating-jacket.webp',
+      prod_arctic01: 'assets/prod-arctic01.webp',
+      prod_stealth: 'assets/prod-stealth.webp',
+      prod_glacier: 'assets/prod-glacier.webp',
+      prod_polar: 'assets/prod-polar.webp',
+      prod_icefield: 'assets/prod-icefield.webp',
+      prod_spindrift: 'assets/prod-spindrift.webp',
+      prod_ridge: 'assets/prod-ridge.webp',
+      prod_apex: 'assets/prod-apex.webp',
       mountain_peaks: 'assets/mountain-peaks.webp',
       portrait_few: 'assets/portrait-few.webp',
       drop05_camp: 'assets/drop05-camp.webp',
@@ -1555,10 +1205,12 @@
     // ===========================================================
     // 5. RENDERING ALL SECTIONS
     // ===========================================================
+    const HERO_CUTOUTS = ['assets/cutout-arctic01.webp', 'assets/cutout-aurora.webp', 'assets/cutout-stealth.webp', 'assets/cutout-polar.webp'];
+
     function renderHero() {
       const item = HERO_COLOURWAYS[activeHeroIdx];
       document.getElementById('hero').style.background = item.bg;
-      document.getElementById('hero-model-img').src = getAssetSrc(item.assetKey, item.fallback);
+      document.getElementById('hero-model-img').src = HERO_CUTOUTS[activeHeroIdx] || getAssetSrc(item.assetKey, item.fallback);
       document.getElementById('hero-drop-label').textContent = item.drop;
       document.getElementById('hero-title').textContent = item.name;
       document.getElementById('hero-price').textContent = `$${item.price.toLocaleString()}`;
@@ -1677,25 +1329,8 @@
     ];
 
     function renderLookbookAndScenes() {
-      document.getElementById('proof-img-0').src = getAssetSrc('mountain_peaks', SCENE_ASSETS.mountain_peaks.fallback);
-      document.getElementById('proof-img-1').src = getAssetSrc('hero_aurora', HERO_COLOURWAYS[1].fallback);
-      document.getElementById('proof-img-2').src = getAssetSrc('hero_stealth', HERO_COLOURWAYS[2].fallback);
-      document.getElementById('proof-img-3').src = getAssetSrc('drop05_camp', SCENE_ASSETS.drop05_camp.fallback);
-
       document.getElementById('mountain-bg-img').src = getAssetSrc('mountain_peaks', SCENE_ASSETS.mountain_peaks.fallback);
       document.getElementById('portrait-few-img').src = getAssetSrc('portrait_few', SCENE_ASSETS.portrait_few.fallback);
-      document.getElementById('floating-jacket-img').src = getAssetSrc('floating_jacket', SCENE_ASSETS.floating_jacket.fallback);
-      document.getElementById('drop05-bg-img').src = getAssetSrc('drop05_camp', SCENE_ASSETS.drop05_camp.fallback);
-
-      const grid = document.getElementById('lookbook-grid');
-      grid.innerHTML = LOOKBOOK_FRAMES.map((f, idx) => `
-        <button onclick="openLightbox(${idx})" class="relative aspect-square rounded-2xl overflow-hidden group border border-white/15 bg-alpine-deep">
-          <img src="${getAssetSrc(f.key, f.fallback)}" alt="${f.caption}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
-          <div class="absolute inset-0 bg-black/0 group-hover:bg-black/25 transition flex items-end p-2">
-            <span class="opacity-0 group-hover:opacity-100 font-mono text-[9px] text-white transition">0${idx + 1} ↗</span>
-          </div>
-        </button>
-      `).join('');
     }
 
     function refreshAllVisuals() {
@@ -2205,11 +1840,8 @@
       // Initial render with crisp SVG fallbacks
       refreshAllVisuals();
       updateNBStatusUI();
-      initProofObserver();
       initDragCarousel();
       initSnowCanvases();
-      initCountdown();
-      initReelMotion();
       initReveals();
       window.addEventListener('scroll', handleScroll, { passive: true });
       handleScroll();
@@ -2219,11 +1851,11 @@
       const altEl = document.getElementById('preloader-alt');
       const barEl = document.getElementById('preloader-bar');
       const start = performance.now();
-      const duration = 1150;
+      const duration = 950;
 
       function runPreloader(now) {
         const p = Math.min(1, (now - start) / duration);
-        const eased = 1 - Math.pow(1 - p, 3);
+        const eased = 1 - Math.pow(1 - p, 4);
         altEl.textContent = String(Math.round(eased * 8848)).padStart(4, '0');
         barEl.style.width = `${Math.round(eased * 100)}%`;
         if (p < 1) {
@@ -2232,8 +1864,9 @@
           setTimeout(() => {
             preloader.classList.add('preloader-done');
             preloader.style.pointerEvents = 'none';
-            setTimeout(() => preloader.remove(), 850);
-          }, 180);
+            document.getElementById('hero').classList.add('hero-reveal');
+            setTimeout(() => preloader.remove(), 700);
+          }, 120);
         }
       }
       requestAnimationFrame(runPreloader);
