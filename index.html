@@ -75,7 +75,9 @@
     }
     #hero-model-wrap {
       animation: heroModelIn 1.15s cubic-bezier(0.22, 1, 0.36, 1) 1.72s both;
+      perspective: 1100px;
     }
+    #hero-model-img { transform-style: preserve-3d; backface-visibility: hidden; }
     /* Smooth colourway crossfade: two stacked figures + two bg layers, never an empty frame */
     #hero-model-wrap img {
       transition: opacity 0.7s cubic-bezier(0.22, 1, 0.36, 1), transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
@@ -372,7 +374,7 @@
       <div class="relative z-10 max-w-[1400px] w-full mx-auto my-auto grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
 
         <!-- Left Product Panel -->
-        <div class="lg:col-span-5 text-white hero-rise" style="animation-delay:1.88s">
+        <div class="lg:col-span-4 text-white hero-rise" style="animation-delay:1.88s">
           <div class="flex items-center gap-3 font-mono text-[11px] uppercase tracking-widest text-white/75 mb-2">
             <span id="hero-drop-label">Drop 01 · Arctic</span>
             <span>·</span>
@@ -422,8 +424,8 @@
         </div>
 
         <!-- Center Hero Model (reel version: model stands over the watermark) -->
-        <div class="relative flex lg:col-span-7 items-start justify-center pointer-events-none w-full">
-          <div id="hero-model-wrap" class="relative w-full max-w-[400px] h-[56vh] lg:h-[74vh]">
+        <div class="relative flex lg:col-span-8 items-center justify-center lg:justify-end pointer-events-none w-full">
+          <div id="hero-model-wrap" class="relative w-full max-w-[480px] h-[60vh] lg:h-[84vh]">
             <img id="hero-model-img" alt="LoveMelt hero colourway" class="absolute inset-0 w-full h-full object-contain drop-shadow-[0_38px_30px_rgba(8,18,30,0.35)]" />
             <img id="hero-model-img-b" alt="" aria-hidden="true" class="absolute inset-0 w-full h-full object-contain drop-shadow-[0_38px_30px_rgba(8,18,30,0.35)]" style="opacity: 0" />
           </div>
@@ -1113,26 +1115,24 @@
       swapHeroVisuals();
     }
 
+    let heroTurning = false;
     function swapHeroVisuals() {
       const item = HERO_COLOURWAYS[activeHeroIdx];
-      // Pick layers by current opacity so an interrupted fade never snaps the visible figure away
-      const a = document.getElementById('hero-model-img');
-      const b = document.getElementById('hero-model-img-b');
-      const front = parseFloat(getComputedStyle(a).opacity) >= parseFloat(getComputedStyle(b).opacity) ? a : b;
-      const back = front === a ? b : a;
-      back.src = HERO_CUTOUTS[activeHeroIdx] || getAssetSrc(item.assetKey, item.fallback);
-      back.style.transition = 'none';
-      back.style.opacity = '0';
-      back.style.transform = 'scale(1.04) translateY(10px)';
-      back.style.zIndex = '2';
-      front.style.zIndex = '1';
-      void back.offsetWidth;
-      back.style.transition = '';
-      back.style.opacity = '1';
-      back.style.transform = 'scale(1) translateY(0)';
-      front.style.opacity = '0';
-      front.style.transform = 'scale(0.985)';
-      heroFrontId = back.id;
+      const img = document.getElementById('hero-model-img');
+      document.getElementById('hero-model-img-b').style.opacity = '0';
+      if (heroTurning) {
+        img.src = HERO_CUTOUTS[activeHeroIdx] || getAssetSrc(item.assetKey, item.fallback);
+      } else {
+        heroTurning = true;
+        img.style.transition = 'transform 0.3s cubic-bezier(0.55, 0, 1, 0.45)';
+        img.style.transform = 'rotateY(86deg) scale(0.97)';
+        setTimeout(() => {
+          img.src = HERO_CUTOUTS[activeHeroIdx] || getAssetSrc(item.assetKey, item.fallback);
+          img.style.transition = 'transform 0.42s cubic-bezier(0.22, 1, 0.36, 1)';
+          img.style.transform = 'rotateY(0deg) scale(1)';
+          setTimeout(() => { heroTurning = false; }, 430);
+        }, 310);
+      }
 
       const bgA = document.getElementById('hero-bg-a');
       const bgB = document.getElementById('hero-bg-b');
